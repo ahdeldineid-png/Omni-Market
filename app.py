@@ -14,17 +14,11 @@ from ui.charts import create_candlestick_chart, create_forecast_chart
 
 st.set_page_config(page_title="Arbitrage Hub - Binance Dark Terminal", page_icon="⚡", layout="wide")
 
-# EXACT BINANCE PRO DARK THEME CSS
 st.markdown("""
 <style>
-    /* Main Dark Theme Backgrounds */
     .stApp { background-color: #0B0E11; color: #EAECEF; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
     .stSidebar { background-color: #181A20 !important; border-right: 1px solid #2B313A; }
-    
-    /* Binance Yellow Headings & Accents */
     h1, h2, h3 { color: #F0B90B !important; font-weight: 700; }
-    
-    /* Metrics Styling - Binance Gold & Green */
     div[data-testid="stMetricValue"] { 
         color: #F0B90B !important; 
         font-family: 'JetBrains Mono', monospace; 
@@ -36,14 +30,11 @@ st.markdown("""
         text-transform: uppercase;
         font-size: 11px;
     }
-    
-    /* Binance Yellow Floating Animated Refresh Button */
     @keyframes bounceFloat {
         0% { transform: translateY(0px) scale(1); box-shadow: 0 4px 12px rgba(240, 185, 11, 0.2); }
         50% { transform: translateY(-5px) scale(1.02); box-shadow: 0 10px 20px rgba(240, 185, 11, 0.4); }
         100% { transform: translateY(0px) scale(1); box-shadow: 0 4px 12px rgba(240, 185, 11, 0.2); }
     }
-    
     div.stButton > button[key="refresh_live_btn"] {
         background: linear-gradient(135deg, #F0B90B 0%, #F8D33A 100%) !important;
         color: #0B0E11 !important;
@@ -57,54 +48,31 @@ st.markdown("""
         transition: all 0.2s ease !important;
         width: 100% !important;
     }
-    div.stButton > button[key="refresh_live_btn"]:hover {
-        transform: translateY(-6px) scale(1.03) !important;
-        box-shadow: 0 12px 24px rgba(240, 185, 11, 0.6) !important;
-        filter: brightness(1.1);
-    }
-
-    /* Input Boxes & Dropdowns - Binance Style */
     input, select, div[data-baseweb="select"] {
         background-color: #2B313A !important;
         color: #EAECEF !important;
         border-radius: 4px !important;
         border: 1px solid #474D57 !important;
     }
-    
-    /* Tables & Dataframes */
-    .stDataFrame {
-        border: 1px solid #2B313A;
-        border-radius: 4px;
-    }
-    
-    /* Tabs */
-    button[data-baseweb="tab"] {
-        color: #848E9C !important;
-        font-weight: 600 !important;
-    }
-    button[aria-selected="true"] {
-        color: #F0B90B !important;
-        border-bottom-color: #F0B90B !important;
-    }
+    .stDataFrame { border: 1px solid #2B313A; border-radius: 4px; }
+    button[data-baseweb="tab"] { color: #848E9C !important; font-weight: 600 !important; }
+    button[aria-selected="true"] { color: #F0B90B !important; border-bottom-color: #F0B90B !important; }
 </style>
 """, unsafe_allow_html=True)
 
 init_db()
 
-# LANGUAGE SWITCHER IN SIDEBAR (DEFAULT PURE ENGLISH)
 st.sidebar.title("🌐 Language")
 lang_choice = st.sidebar.selectbox("Select Display Language", ["English", "العربية"], index=0)
 is_ar = (lang_choice == "العربية")
 
 st.sidebar.markdown("---")
-
 refresh_btn_label = "💵↗️ Refresh Live Rates" if not is_ar else "💵↗️ تحديث الأسعار والأسواق أونلاين"
 if st.sidebar.button(refresh_btn_label, key="refresh_live_btn", use_container_width=True):
     st.cache_data.clear()
     st.rerun()
 
 st.sidebar.caption(f"⏱️ Last Refreshed: {datetime.now().strftime('%H:%M:%S')}")
-
 st.sidebar.markdown("---")
 st.sidebar.title("⚡ Arbitrage Hub")
 st.sidebar.caption("Binance-Grade Financial Intelligence Terminal" if not is_ar else "محرك التحليل المالي وأسواق البورصة اللحظية")
@@ -191,17 +159,21 @@ elif nav.startswith("2."):
     sub = "Search any company by Arabic name, English name, or Ticker symbol (No Ticker Code required)" if not is_ar else "ابحث باسم الشركة بالعربي، بالإنجليزي، أو بالكود بدون الحاجة لحفظ الرموز"
     render_header(title, sub)
     
-    st.info("💡 **Stock Search Engine:** Type any company name in Arabic (e.g., `فوري`, `السنوات`, `طلعت مصطفى`, `سويدي`, `أبو قير`, `إعمار`), English (e.g., `CIB`, `Fawry`, `Swedy`, `Apple`), or Ticker Code." if not is_ar else "💡 **محرك البحث الذكي:** اكتب اسم أي شركة بالعربي (مثل: `فوري`, `طلعت مصطفى`, `السويدي`, `أبو قير`, `جهينة`) أو بالإنجليزي أو بالكود.")
+    st.info("💡 **Stock Search Engine:** Type any company name in Arabic (e.g., `فوري`, `طلعت مصطفى`, `السويدي`, `أبو قير`, `جهينة`), English (e.g., `CIB`, `Fawry`, `Swedy`, `Apple`), or Ticker Code." if not is_ar else "💡 **محرك البحث الذكي:** اكتب اسم أي شركة بالعربي (مثل: `فوري`, `طلعت مصطفى`, `السويدي`, `أبو قير`, `جهينة`) أو بالإنجليزي أو بالكود.")
     
     search_query = st.text_input("🔍 Search Company / ابحث عن أي شركة", value="", placeholder="e.g. فوري / CIB / طلعت مصطفى / Apple / COMI.CA").strip()
     
     matched_stocks = search_stocks(search_query)
     
-    stock_options = [f"{s['name_en']} | {s['name_ar']} ({s['symbol']})" for s in matched_stocks]
+    stock_options = []
+    for s in matched_stocks:
+        s_en = s.get('name_en', s.get('symbol', ''))
+        s_ar = s.get('name_ar', s.get('symbol', ''))
+        s_sym = s.get('symbol', '')
+        stock_options.append(f"{s_en} | {s_ar} ({s_sym})")
     
     selected_option = st.selectbox("Select Company / اختر الشركة", stock_options, index=0)
     
-    # Extract ticker from option string
     selected_symbol = selected_option.split("(")[-1].replace(")", "").strip()
     
     quote = get_stock_quote(selected_symbol)
@@ -337,7 +309,7 @@ elif nav.startswith("7."):
         df_financials = create_sample_3yr_financial_data()
 
     st.subheader("📋 Standardized Financial Statement View")
-    st.dataframe(df_financials, use_container_width=True)
+    st.dataframe(df_financials, use_category=True if 'use_category' in globals() else True, use_container_width=True)
     
     st.markdown("---")
     if st.button("📊 Calculate Ratios & Run Forecast Model", key="analyze_btn", use_container_width=True):
