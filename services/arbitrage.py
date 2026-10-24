@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from providers.binance import get_binance_ticker_24hr
 
 def scan_arbitrage_opportunities(starting_capital: float = 10000.0, min_net_spread_pct: float = 0.2, buy_fee_pct: float = 0.075, sell_fee_pct: float = 0.075) -> List[Dict[str, Any]]:
-    now_str = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    now_str = datetime.now(timezone.utc).strftime("%H:%M:%S UTC")
     opportunities = []
     binance_tickers = get_binance_ticker_24hr()
     if not binance_tickers:

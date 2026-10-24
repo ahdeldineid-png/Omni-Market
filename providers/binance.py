@@ -11,7 +11,7 @@ def get_binance_ticker_24hr(symbol: Optional[str] = None) -> List[Dict[str, Any]
         resp = requests.get(url, timeout=5)
         resp.raise_for_status()
         data = resp.json()
-        now_str = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+        now_str = datetime.now(timezone.utc).strftime("%H:%M:%S UTC")
         if isinstance(data, dict):
             data = [data]
         results = []
@@ -31,7 +31,7 @@ def get_binance_ticker_24hr(symbol: Optional[str] = None) -> List[Dict[str, Any]
                 'low_24h': float(item.get('lowPrice', 0.0)),
                 'volume_24h': float(item.get('volume', 0.0)),
                 'quote_volume_24h': float(item.get('quoteVolume', 0.0)),
-                'source': 'Binance Public Spot Feed',
+                'source': 'Binance Spot Feed (Live)',
                 'timestamp': now_str
             })
         return results
