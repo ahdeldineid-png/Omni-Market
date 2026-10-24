@@ -3,9 +3,10 @@ import pandas as pd
 from datetime import datetime, timezone
 from typing import Dict, Any, List
 
+# EGX 30 Index (The 30 most active and liquid companies in the Egyptian Exchange)
 EGX30_STOCKS = [
     {"symbol": "COMI.CA", "name_en": "Commercial International Bank (CIB)", "name_ar": "البنك التجاري الدولي", "index": "EGX30", "sector": "Banking & Financials"},
-    {"symbol": "FWRY.CA", "name_en": "Fawry Banking & Payment Technology", "name_ar": "فوري لتكنولوجيا المدفوعات", "index": "EGX30", "sector": "Banking & Financials"},
+    {"symbol": "FWRY.CA", "name_en": "Fawry Banking & Payment Technology", "name_ar": "فوري لتكنولوجيا المدفوعات والمدفوعات الإلكترونية", "index": "EGX30", "sector": "Banking & Financials"},
     {"symbol": "EAST.CA", "name_en": "Eastern Company", "name_ar": "الشرقية - إيسترن كومباني", "index": "EGX30", "sector": "Consumer Goods & Tobacco"},
     {"symbol": "SWDY.CA", "name_en": "Elsewedy Electric", "name_ar": "السويدي إليكتريك", "index": "EGX30", "sector": "Industrial & Construction"},
     {"symbol": "MFPC.CA", "name_en": "Misr Fertilisers Production Co (MOPCO)", "name_ar": "مصر لإنتاج السماد - موبكو", "index": "EGX30", "sector": "Petrochemicals & Chemicals"},
@@ -23,33 +24,41 @@ EGX30_STOCKS = [
     {"symbol": "ORWE.CA", "name_en": "Oriental Weavers Carpets", "name_ar": "النساجون الشرقيون", "index": "EGX30", "sector": "Textiles & Home Goods"},
     {"symbol": "AMOC.CA", "name_en": "Alexandria Mineral Oils Company (AMOC)", "name_ar": "الإسكندرية للزيوت المعدنية - أموك", "index": "EGX30", "sector": "Energy & Petrochemicals"},
     {"symbol": "SKPC.CA", "name_en": "Sidi Kerir Petrochemicals (Sydpec)", "name_ar": "سيدي كرير للبتروكيماويات - سيدبك", "index": "EGX30", "sector": "Petrochemicals & Chemicals"},
-    {"symbol": "CIEB.CA", "name_en": "Credit Agricole Egypt", "name_ar": "بنك كريدي أجرِكول مصر", "index": "EGX30", "sector": "Banking & Financials"}
+    {"symbol": "CIEB.CA", "name_en": "Credit Agricole Egypt", "name_ar": "بنك كريدي أجرِكول مصر", "index": "EGX30", "sector": "Banking & Financials"},
+    {"symbol": "ADIB.CA", "name_en": "Abu Dhabi Islamic Bank Egypt (ADIB)", "name_ar": "مصرف أبو ظبي الإسلامي مصر", "index": "EGX30", "sector": "Banking & Financials"},
+    {"symbol": "EMFD.CA", "name_en": "Emaar Misr for Development", "name_ar": "إعمار مصر للتنمية", "index": "EGX30", "sector": "Real Estate & Construction"},
+    {"symbol": "OCDI.CA", "name_en": "Six of October Development & Investment (SODIC)", "name_ar": "سوديك - السادس من أكتوبر للتنمية والاستثمار", "index": "EGX30", "sector": "Real Estate & Construction"},
+    {"symbol": "QNBA.CA", "name_en": "Qatar National Bank Alahli (QNB)", "name_ar": "بنك قطر الوطني الأهلي", "index": "EGX30", "sector": "Banking & Financials"},
+    {"symbol": "ABUK.CA", "name_en": "Abu Qir Fertilizers", "name_ar": "أبو قير للأسمدة", "index": "EGX30", "sector": "Petrochemicals"},
+    {"symbol": "EFIG.CA", "name_en": "e-finance for Digital & Financial Investments", "name_ar": "إي فاينانس للاستثمارات المالية والرقمية", "index": "EGX30", "sector": "Technology & Financials"},
+    {"symbol": "ORHD.CA", "name_en": "Orascom Development Egypt", "name_ar": "أوراسكوم للتنمية مصر", "index": "EGX30", "sector": "Real Estate"},
+    {"symbol": "CCAP.CA", "name_en": "Qalaa Holdings", "name_ar": "القلعة للاستثمارات المالية", "index": "EGX30", "sector": "Investment"},
+    {"symbol": "HDBK.CA", "name_en": "Housing & Development Bank", "name_ar": "بنك التعمير والإسكان", "index": "EGX30", "sector": "Banking"},
+    {"symbol": "CSPT.CA", "name_en": "Alexandria Container & Cargo Handling", "name_ar": "الإسكندرية لتداول البضائع والحاويات", "index": "EGX30", "sector": "Shipping & Logistics"}
 ]
 
-EGX50_STOCKS = [
-    {"symbol": "ADIB.CA", "name_en": "Abu Dhabi Islamic Bank Egypt (ADIB)", "name_ar": "مصرف أبو ظبي الإسلامي مصر", "index": "EGX50", "sector": "Banking & Financials"},
-    {"symbol": "BTFH.CA", "name_en": "Beltone Financial Holding", "name_ar": "بلتون المالية القابضة", "index": "EGX50", "sector": "Banking & Financials"},
-    {"symbol": "EFIG.CA", "name_en": "e-finance for Digital & Financial Investments", "name_ar": "إي فاينانس للاستثمارات المالية والرقمية", "index": "EGX50", "sector": "Banking & Financials"},
-    {"symbol": "EMFD.CA", "name_en": "Emaar Misr for Development", "name_ar": "إعمار مصر للتنمية", "index": "EGX50", "sector": "Real Estate & Construction"},
-    {"symbol": "HDBK.CA", "name_en": "Housing & Development Bank", "name_ar": "بنك التعمير والإسكان", "index": "EGX50", "sector": "Banking & Financials"},
-    {"symbol": "QNBA.CA", "name_en": "Qatar National Bank Alahli (QNB)", "name_ar": "بنك قطر الوطني الأهلي", "index": "EGX50", "sector": "Banking & Financials"},
-    {"symbol": "FAIT.CA", "name_en": "Faisal Islamic Bank of Egypt", "name_ar": "بنك فيصل الإسلامي المصري", "index": "EGX50", "sector": "Banking & Financials"},
-    {"symbol": "EGBE.CA", "name_en": "Egyptian Export Development Bank (EXPA)", "name_ar": "البنك المصري لتنمية الصادرات", "index": "EGX50", "sector": "Banking & Financials"},
-    {"symbol": "CCAP.CA", "name_en": "Qalaa Holdings", "name_ar": "القلعة للاستثمارات المالية", "index": "EGX50", "sector": "Investment & Financials"},
-    {"symbol": "CICH.CA", "name_en": "CI Capital Holding", "name_ar": "سي آي كابيتال القابضة", "index": "EGX50", "sector": "Banking & Financials"},
-    {"symbol": "BINV.CA", "name_en": "B Investments Holding", "name_ar": "بي إنفستمنتس القابضة", "index": "EGX50", "sector": "Investment & Financials"},
-    {"symbol": "OCDI.CA", "name_en": "Six of October Development & Investment (SODIC)", "name_ar": "سوديك - السادس من أكتوبر للتنمية", "index": "EGX50", "sector": "Real Estate & Construction"},
-    {"symbol": "ORHD.CA", "name_en": "Orascom Development Egypt", "name_ar": "أوراسكوم للتنمية مصر", "index": "EGX50", "sector": "Real Estate & Construction"},
-    {"symbol": "KIMA.CA", "name_en": "Egyptian Chemical Industries (KIMA)", "name_ar": "كيما - الصناعات الكيماوية المصرية", "index": "EGX50", "sector": "Petrochemicals & Chemicals"},
-    {"symbol": "MCRE.CA", "name_en": "Misr Chemical Industries", "name_ar": "مصر لصناعة الكيماويات", "index": "EGX50", "sector": "Petrochemicals & Chemicals"},
-    {"symbol": "EGAL.CA", "name_en": "Egypt Aluminium", "name_ar": "مصر للألومنيوم", "index": "EGX50", "sector": "Basic Materials & Metals"},
-    {"symbol": "DOMT.CA", "name_en": "Arab Dairy Products (Domty)", "name_ar": "دومتي - الصناعات الغذائية", "index": "EGX50", "sector": "Food & Beverages"},
-    {"symbol": "DITN.CA", "name_en": "Delta Sugar", "name_ar": "الدلتا للسكر", "index": "EGX50", "sector": "Food & Beverages"},
-    {"symbol": "CLHO.CA", "name_en": "Cleopatra Hospital Company", "name_ar": "مستشفى كليوباترا", "index": "EGX50", "sector": "Healthcare & Pharmaceuticals"},
-    {"symbol": "ISPH.CA", "name_en": "Ibnsina Pharma", "name_ar": "ابن سينا فارما", "index": "EGX50", "sector": "Healthcare & Pharmaceuticals"},
-    {"symbol": "RMDA.CA", "name_en": "Tenth of Ramadan Pharmaceutical (Rameda)", "name_ar": "رميدا - العاشر من رمضان للأدوية", "index": "EGX50", "sector": "Healthcare & Pharmaceuticals"},
-    {"symbol": "CSPT.CA", "name_en": "Alexandria Container & Cargo Handling", "name_ar": "الإسكندرية لتداول البضائع والحاويات", "index": "EGX50", "sector": "Shipping & Logistics"},
-    {"symbol": "ALCN.CA", "name_en": "Canal Shipping Agencies", "name_ar": "القناة للتوكيلات الملاحية", "index": "EGX50", "sector": "Shipping & Logistics"}
+# EGX 70 / EGX 50 Active Mid-Cap and Small-Cap Stocks
+EGX70_EGX50_STOCKS = [
+    {"symbol": "BTFH.CA", "name_en": "Beltone Financial Holding", "name_ar": "بلتون المالية القابضة", "index": "EGX70", "sector": "Financial Services"},
+    {"symbol": "FAIT.CA", "name_en": "Faisal Islamic Bank of Egypt", "name_ar": "بنك فيصل الإسلامي المصري - بالجنيه", "index": "EGX70", "sector": "Banking"},
+    {"symbol": "EGBE.CA", "name_en": "Egyptian Export Development Bank (EXPA)", "name_ar": "البنك المصري لتنمية الصادرات", "index": "EGX70", "sector": "Banking"},
+    {"symbol": "CICH.CA", "name_en": "CI Capital Holding", "name_ar": "سي آي كابيتال القابضة", "index": "EGX70", "sector": "Financial Services"},
+    {"symbol": "BINV.CA", "name_en": "B Investments Holding", "name_ar": "بي إنفستمنتس القابضة", "index": "EGX70", "sector": "Investment"},
+    {"symbol": "KIMA.CA", "name_en": "Egyptian Chemical Industries (KIMA)", "name_ar": "كيما - الصناعات الكيماوية المصرية", "index": "EGX70", "sector": "Chemicals"},
+    {"symbol": "MCRE.CA", "name_en": "Misr Chemical Industries", "name_ar": "مصر لصناعة الكيماويات", "index": "EGX70", "sector": "Chemicals"},
+    {"symbol": "EGAL.CA", "name_en": "Egypt Aluminium", "name_ar": "مصر للألومنيوم", "index": "EGX70", "sector": "Basic Materials"},
+    {"symbol": "DOMT.CA", "name_en": "Arab Dairy Products (Domty)", "name_ar": "دومتي - الصناعات الغذائية", "index": "EGX70", "sector": "Food & Beverages"},
+    {"symbol": "DITN.CA", "name_en": "Delta Sugar", "name_ar": "الدلتا للسكر", "index": "EGX70", "sector": "Food & Beverages"},
+    {"symbol": "CLHO.CA", "name_en": "Cleopatra Hospital Company", "name_ar": "مستشفى كليوباترا", "index": "EGX70", "sector": "Healthcare"},
+    {"symbol": "ISPH.CA", "name_en": "Ibnsina Pharma", "name_ar": "ابن سينا فارما", "index": "EGX70", "sector": "Healthcare & Pharmaceuticals"},
+    {"symbol": "RMDA.CA", "name_en": "Tenth of Ramadan Pharmaceutical (Rameda)", "name_ar": "رميدا - العاشر من رمضان للأدوية", "index": "EGX70", "sector": "Healthcare & Pharmaceuticals"},
+    {"symbol": "ALCN.CA", "name_en": "Canal Shipping Agencies", "name_ar": "القناة للتوكيلات الملاحية", "index": "EGX70", "sector": "Shipping & Logistics"},
+    {"symbol": "SPPH.CA", "name_en": "Speed Medical", "name_ar": "سبيد ميديكال", "index": "EGX70", "sector": "Healthcare"},
+    {"symbol": "ARAB.CA", "name_en": "Aраб Aсетс Дерيلوبمنت", "name_ar": "أصول للتنمية والاستثمار الزراعي", "index": "EGX70", "sector": "Agriculture"},
+    {"symbol": "OIH.CA", "name_en": "Orascom Investment Holding", "name_ar": "أوراسكوم للاستثمار القابضة", "index": "EGX70", "sector": "Investment"},
+    {"symbol": "UNIT.CA", "name_en": "Unimin Egypt / Universal", "name_ar": "يونيباك / الإجمالية", "index": "EGX70", "sector": "Industrial"},
+    {"symbol": "PRDC.CA", "name_en": "Pioneers Properties for Development", "name_ar": "بايونيرز بروبرتيز للتنمية العمرانية", "index": "EGX70", "sector": "Real Estate"},
+    {"symbol": "MOIN.CA", "name_en": "Marsa Marsa Alam For Tourism Development", "name_ar": "مرسى علم للتنمية السياحية", "index": "EGX70", "sector": "Tourism"}
 ]
 
 GLOBAL_TECH_STOCKS = [
@@ -62,7 +71,7 @@ GLOBAL_TECH_STOCKS = [
     {"symbol": "META", "name_en": "Meta Platforms Inc. (Facebook)", "name_ar": "ميتا - فيسبوك", "index": "GLOBAL_TECH", "sector": "Global Tech Giants"}
 ]
 
-ALL_STOCKS_LIST = EGX30_STOCKS + EGX50_STOCKS + GLOBAL_TECH_STOCKS
+ALL_STOCKS_LIST = EGX30_STOCKS + EGX70_EGX50_STOCKS + GLOBAL_TECH_STOCKS
 
 def search_stocks(query_str: str) -> List[Dict[str, Any]]:
     if not query_str:

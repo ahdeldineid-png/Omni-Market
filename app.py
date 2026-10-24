@@ -4,7 +4,7 @@ from datetime import datetime
 from storage.database import init_db, fetch_all, execute_query
 from providers.binance import get_binance_ticker_24hr, get_binance_klines
 from providers.forex import calculate_universal_forex_conversion, fetch_live_usd_egp_rate, fetch_live_rates_all_currencies
-from providers.stocks import get_stock_quote, get_stock_history, search_stocks, EGX30_STOCKS, EGX50_STOCKS, GLOBAL_TECH_STOCKS, ALL_STOCKS_LIST
+from providers.stocks import get_stock_quote, get_stock_history, search_stocks, EGX30_STOCKS, EGX70_EGX50_STOCKS, GLOBAL_TECH_STOCKS, ALL_STOCKS_LIST
 from providers.gold import get_gold_reference_data
 from services.arbitrage import scan_arbitrage_opportunities
 from services.financial_analyzer import parse_uploaded_financial_file, fetch_stock_financials_yfinance, create_sample_3yr_financial_data, analyze_financial_ratios
@@ -153,10 +153,10 @@ if nav.startswith("1."):
     st.markdown("---")
     render_live_crypto_table()
 
-# MODULE 2: EGX MARKET INDICES & STOCKS (EGX30, EGX50, GLOBAL TECH + UNIFIED SEARCH)
+# MODULE 2: EGX MARKET INDICES & STOCKS (EGX30, EGX70, GLOBAL TECH + UNIFIED SEARCH)
 elif nav.startswith("2."):
     title = "🏛️ EGX Market Indices & Stocks Terminal" if not is_ar else "🏛️ مؤشرات وأسهم البورصة المصرية والعالمية"
-    sub = "Explore EGX30, EGX50, and Global Tech stocks with categorized tabs and universal search" if not is_ar else "تصفح مؤشرات EGX30 و EGX50 والأسهم العالمية مع تبويب دقيق وبحث شامل بالاسم أو الكود"
+    sub = "Explore EGX30, EGX70/50, and Global Tech stocks with categorized tabs and universal search" if not is_ar else "تصفح مؤشرات EGX30 و EGX70 والأسهم العالمية مع تبويب دقيق وبحث شامل بالاسم أو الكود"
     render_header(title, sub)
     
     # Universal Search Bar
@@ -190,7 +190,7 @@ elif nav.startswith("2."):
                 st.warning("Historical chart unavailable for this symbol.")
     else:
         # Categorized Indices Tabs
-        tab_30, tab_50, tab_global = st.tabs(["📈 EGX 30 Index Stocks", "📊 EGX 50 Index Stocks", "🌍 Global Tech Giants"])
+        tab_30, tab_70, tab_global = st.tabs(["📈 EGX 30 Index (الأسهم القيادية)", "📊 EGX 70 / 50 Index (الأسهم المتوسطة)", "🌍 Global Tech Giants"])
         
         def render_index_section(stocks_list, index_name):
             st.markdown(f"### 📋 {index_name} Components & Live Quotes")
@@ -215,8 +215,8 @@ elif nav.startswith("2."):
 
         with tab_30:
             render_index_section(EGX30_STOCKS, "EGX 30")
-        with tab_50:
-            render_index_section(EGX50_STOCKS, "EGX 50")
+        with tab_70:
+            render_index_section(EGX70_EGX50_STOCKS, "EGX 70 & EGX 50")
         with tab_global:
             render_index_section(GLOBAL_TECH_STOCKS, "Global Tech Giants")
 
@@ -264,11 +264,9 @@ elif nav.startswith("4."):
     tickers = get_binance_ticker_24hr()
     if tickers:
         df_crypto = pd.DataFrame(tickers)
-        # Reorder and format columns
         df_crypto = df_crypto[['symbol', 'price', 'change_24h_pct', 'high_24h', 'low_24h', 'volume_24h', 'quote_volume_24h']]
         df_crypto.columns = ['Trading Pair', 'Last Price ($)', '24h Change (%)', '24h High ($)', '24h Low ($)', '24h Volume', '24h Turnover (USDT)']
         
-        # Search filter within crypto
         crypto_search = st.text_input("🔍 Filter Crypto Pair / تصفية عملة رقمية", value="", placeholder="e.g. BTC, ETH, SOL, XRP").strip().upper()
         if crypto_search:
             df_crypto = df_crypto[df_crypto['Trading Pair'].str.contains(crypto_search)]
@@ -283,26 +281,19 @@ elif nav.startswith("4."):
     col_c1, col_c2 = st.columns([1, 2])
     crypto_symbols_list = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "ADAUSDT", "DOGEUSDT", "AVAXUSDT", "LINKUSDT", "DOTUSDT"]
     selected_crypto_sym = col_c1.selectbox("Select Trading Pair / اختر زوج التداول", crypto_symbols_list, index=0)
-    
     selected_interval = col_c2.selectbox("Select Timeframe / اختر الإطار الزمني", ["1h", "4h", "1d", "1w"], index=2)
     
-    # Map interval to binance api
     interval_map = {"1h": "1h", "4h": "4h", "1d": "1d", "1w": "1w"}
-    
     df_klines = get_binance_klines(selected_crypto_sym, interval=interval_map.get(selected_interval, "1d"))
     if not df_klines.empty:
         df_klines = calculate_technical_indicators(df_klines)
-        
-        # Display current ticker stats
         single_ticker = get_binance_ticker_24hr(selected_crypto_sym)
         if single_ticker:
             st.markdown(f"### **{selected_crypto_sym}** — Live Price: **${single_ticker[0]['price']:,.4f}** ({single_ticker[0]['change_24h_pct']:+.2f}%)")
-            
         fig_crypto = create_candlestick_chart(df_klines, f"Binance Live Spot - {selected_crypto_sym} ({selected_interval})")
         st.plotly_chart(fig_crypto, use_container_width=True)
     else:
         st.warning(f"Historical klines unavailable for {selected_crypto_sym}.")
-
 
 # MODULE 5: GOLD & SAGHA PREMIUM CALCULATOR
 elif nav.startswith("5."):
@@ -334,7 +325,6 @@ elif nav.startswith("7."):
     render_header("📈 Financial Statements & Precision Ratio Intelligence", "Auto-fetch stock statements or upload custom files for instant multi-year ratio & forecast analysis")
     
     tab1, tab2 = st.tabs(["🔍 Auto-Fetch Stock Statements", "📂 Upload Custom Financial Report"])
-    
     df_financials = None
     
     with tab1:
@@ -342,7 +332,6 @@ elif nav.startswith("7."):
         st.info("Enter any stock symbol from Egyptian Exchange (EGX) or Global Stock Markets (e.g. `COMI.CA`, `FWRY.CA`, `AAPL`, `NVDA`, `MSFT`, `AMZN`) to fetch multi-year statements instantly.")
         
         stock_input = st.text_input("Enter Stock Ticker", value="COMI.CA").upper()
-        
         if st.button("🚀 Fetch Financial Statements", key="fetch_btn"):
             with st.spinner("Extracting income statement & balance sheet..."):
                 fetched_df, msg = fetch_stock_financials_yfinance(stock_input)
@@ -379,7 +368,6 @@ elif nav.startswith("7."):
     st.markdown("---")
     if st.button("📊 Calculate Ratios & Run Forecast Model", key="analyze_btn", use_container_width=True):
         analysis = analyze_financial_ratios(df_financials)
-        
         if analysis and "ratios_by_year" in analysis:
             st.subheader("📋 Calculated Multi-Year Financial Ratios & Performance")
             ratios_df = pd.DataFrame(analysis["ratios_by_year"])
@@ -388,7 +376,6 @@ elif nav.startswith("7."):
             st.markdown("---")
             st.subheader("🔮 Next Year (N+1) Forecast & Compound Projection")
             fc = analysis["forecast_next_year"]
-            
             c1, c2, c3, c4 = st.columns(4)
             c1.metric("Projected Revenue", f"${fc['Projected Revenue']:,.2f}", f"{fc['Revenue CAGR / Growth Rate (%)']:+.2f}% CAGR")
             c2.metric("Projected Net Income", f"${fc['Projected Net Income']:,.2f}", f"{fc['Net Income CAGR / Growth Rate (%)']:+.2f}% CAGR")
