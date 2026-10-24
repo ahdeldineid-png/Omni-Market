@@ -10,9 +10,8 @@ def get_gold_reference_data(sagha_premium_pct: float = 0.0) -> Dict[str, Any]:
     now_str = datetime.now(timezone.utc).strftime("%H:%M:%S UTC")
     egp_rate = fetch_live_usd_egp_rate()
     usd_per_oz = 2735.0
-    gold_source = "Global Spot Market Live"
+    gold_source = "Binance PAXG Spot Live"
     
-    # 1. Binance PAXG spot live price
     try:
         resp = requests.get("https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT", timeout=4)
         if resp.status_code == 200:
@@ -23,7 +22,6 @@ def get_gold_reference_data(sagha_premium_pct: float = 0.0) -> Dict[str, Any]:
     except Exception:
         pass
 
-    # 2. Yahoo Finance COMEX Futures fallback
     if usd_per_oz == 2735.0:
         try:
             ticker = yf.Ticker("GC=F")
@@ -35,8 +33,6 @@ def get_gold_reference_data(sagha_premium_pct: float = 0.0) -> Dict[str, Any]:
             pass
         
     base_egp_per_gram_24k = (usd_per_oz * egp_rate) / TROY_OUNCE_TO_GRAMS
-    
-    # Apply Egyptian local Sagha premium/adjustment factor if set
     adjusted_egp_per_gram_24k = base_egp_per_gram_24k * (1.0 + (sagha_premium_pct / 100.0))
     
     karat_factors = {'24K': 1.0, '21K': 21.0/24.0, '18K': 18.0/24.0, '14K': 14.0/24.0}

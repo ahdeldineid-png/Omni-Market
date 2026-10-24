@@ -11,22 +11,8 @@ def fetch_live_rates_all_currencies(base_currency: str = "USD") -> Dict[str, flo
     base = base_currency.upper()
     rates = {base: 1.0}
     
-    # Provider 1: Open ER API
     try:
         resp = requests.get(f"https://open.er-api.com/v6/latest/{base}", headers=HEADERS, timeout=4)
-        if resp.status_code == 200:
-            data = resp.json()
-            fetched = data.get('rates', {})
-            if fetched:
-                for c, r in fetched.items():
-                    rates[c] = float(r)
-                return rates
-    except Exception:
-        pass
-
-    # Provider 2: ExchangeRate-API
-    try:
-        resp = requests.get(f"https://api.exchangerate-api.com/v4/latest/{base}", headers=HEADERS, timeout=4)
         if resp.status_code == 200:
             fetched = resp.json().get('rates', {})
             if fetched:
@@ -36,9 +22,8 @@ def fetch_live_rates_all_currencies(base_currency: str = "USD") -> Dict[str, flo
     except Exception:
         pass
 
-    # Provider 3: Frankfurter API (Major Currencies)
     try:
-        resp = requests.get(f"https://api.frankfurter.app/latest?from={base}", headers=HEADERS, timeout=4)
+        resp = requests.get(f"https://api.exchangerate-api.com/v4/latest/{base}", headers=HEADERS, timeout=4)
         if resp.status_code == 200:
             fetched = resp.json().get('rates', {})
             if fetched:
@@ -51,12 +36,10 @@ def fetch_live_rates_all_currencies(base_currency: str = "USD") -> Dict[str, flo
     return rates
 
 def fetch_live_usd_egp_rate() -> float:
-    # 1. Try ExchangeRate API
     rates = fetch_live_rates_all_currencies("USD")
     if "EGP" in rates and rates["EGP"] > 0:
         return round(rates["EGP"], 2)
 
-    # 2. Try yfinance
     try:
         ticker = yf.Ticker("USDEGP=X")
         price = ticker.fast_info.get('last_price')
@@ -105,6 +88,6 @@ def calculate_universal_forex_conversion(amount: float, from_curr: str, to_curr:
         'from_amount_in_egp': round(from_in_egp, 2),
         'to_amount_in_egp': round(to_in_egp, 2),
         'live_usd_egp': round(egp_rate_usd, 2),
-        'source': 'Universal Multi-Feed Live Forex Engine',
+        'source': 'Binance Multi-Feed Forex Engine',
         'timestamp': now_str
     }

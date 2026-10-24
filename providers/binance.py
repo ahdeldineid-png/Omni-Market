@@ -31,7 +31,7 @@ def get_binance_ticker_24hr(symbol: Optional[str] = None) -> List[Dict[str, Any]
                 'low_24h': float(item.get('lowPrice', 0.0)),
                 'volume_24h': float(item.get('volume', 0.0)),
                 'quote_volume_24h': float(item.get('quoteVolume', 0.0)),
-                'source': 'Binance Spot Feed (Live)',
+                'source': 'Binance Live Spot Feed',
                 'timestamp': now_str
             })
         return results

@@ -1,3 +1,7 @@
-# ⚡ Arbitrage Hub & Financial Analyzer - Precision Live Edition (V8)
+# ⚡ Arbitrage Hub & Financial Analyzer - Binance Dark Edition (V9)
 
-Features multi-provider fallback architecture with User-Agent emulation to bypass Cloud rate-limits and accurate Egyptian Sagha Gold local premium controls.
+The ultimate Binance-themed financial intelligence terminal with:
+- Pure Binance Dark Theme (#0B0E11 background, #1E2329 cards, #F0B90B yellow, #0ECB81 green, #F6465D red).
+- Full Bilingual Toggle (Pure English mode default + optional Arabic mode).
+- Intelligent Stock Search by Arabic name, English name, or Ticker symbol.
+- Complete EGX Stocks + Global Markets database with search auto-matching.
