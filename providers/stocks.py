@@ -3,61 +3,66 @@ import pandas as pd
 from datetime import datetime, timezone
 from typing import Dict, Any, List
 
-ALL_STOCKS_LIST = [
-    # EGX30 & Top Leaders
-    {"symbol": "COMI.CA", "name_en": "Commercial International Bank (CIB)", "name_ar": "البنك التجاري الدولي", "sector_en": "Banking & Financials", "sector_ar": "القطاع البنكي والمالي"},
-    {"symbol": "FWRY.CA", "name_en": "Fawry Banking & Payment Technology", "name_ar": "فوري لتكنولوجيا المدفوعات", "sector_en": "Banking & Financials", "sector_ar": "القطاع البنكي والمالي"},
-    {"symbol": "EAST.CA", "name_en": "Eastern Company", "name_ar": "الشرقية - إيسترن كومباني", "sector_en": "Consumer Goods & Tobacco", "sector_ar": "السلع الاستهلاكية والتبغ"},
-    {"symbol": "SWDY.CA", "name_en": "Elsewedy Electric", "name_ar": "السويدي إليكتريك", "sector_en": "Industrial & Construction", "sector_ar": "الصناعة والإنشاءات"},
-    {"symbol": "MFPC.CA", "name_en": "Misr Fertilisers Production Co (MOPCO)", "name_ar": "مصر لإنتاج السماد - موبكو", "sector_en": "Petrochemicals & Chemicals", "sector_ar": "البتروكيماويات والكيماويات"},
-    {"symbol": "ABUK.CA", "name_en": "Abu Qir Fertilizers & Chemical Industries", "name_ar": "أبو قير للأسمدة والصناعات الكيماوية", "sector_en": "Petrochemicals & Chemicals", "sector_ar": "البتروكيماويات والكيماويات"},
-    {"symbol": "ETEL.CA", "name_en": "Telecom Egypt (WE)", "name_ar": "المصرية للاتصالات", "sector_en": "Telecommunications", "sector_ar": "الاتصالات"},
-    {"symbol": "HRHO.CA", "name_en": "EFG Hermes Holding", "name_ar": "إي إف جي القابضة - هيرميس", "sector_en": "Banking & Financials", "sector_ar": "القطاع البنكي والمالي"},
-    {"symbol": "TMGH.CA", "name_en": "Talaat Moustafa Group Holding (TMG)", "name_ar": "مجموعة طلعت مصطفى القابضة", "sector_en": "Real Estate & Construction", "sector_ar": "العقارات والإنشاءات"},
-    {"symbol": "ORAS.CA", "name_en": "Orascom Construction PLC", "name_ar": "أوراسكوم كونستراكشون", "sector_en": "Industrial & Construction", "sector_ar": "الصناعة والإنشاءات"},
-    {"symbol": "ESRS.CA", "name_en": "Ezz Steel", "name_ar": "عز الصلب", "sector_en": "Basic Materials & Metals", "sector_ar": "المواد الأساسية والمعادن"},
-    {"symbol": "EKHO.CA", "name_en": "Egypt Kuwait Holding", "name_ar": "القابضة المصرية الكويتية", "sector_en": "Investment & Financials", "sector_ar": "الاستثمار والخدمات المالية"},
-    {"symbol": "JUFO.CA", "name_en": "Juhayna Food Industries", "name_ar": "جهينة للصناعات الغذائية", "sector_en": "Food & Beverages", "sector_ar": "الأغذية والمشروبات"},
-    {"symbol": "HELI.CA", "name_en": "Heliopolis Housing & Development", "name_ar": "مصر الجديدة للإسكان والتعمير", "sector_en": "Real Estate & Construction", "sector_ar": "العقارات والإنشاءات"},
-    {"symbol": "MASR.CA", "name_en": "Madinet Masr for Housing & Development", "name_ar": "مدينة مصر للإسكان والتعمير", "sector_en": "Real Estate & Construction", "sector_ar": "العقارات والإنشاءات"},
-    {"symbol": "PHDC.CA", "name_en": "Palm Hills Developments", "name_ar": "بالم هيلز للتعمير", "sector_en": "Real Estate & Construction", "sector_ar": "العقارات والإنشاءات"},
-    {"symbol": "ORWE.CA", "name_en": "Oriental Weavers Carpets", "name_ar": "النساجون الشرقيون", "sector_en": "Textiles & Home Goods", "sector_ar": "المنسوجات والمفروشات"},
-    {"symbol": "AMOC.CA", "name_en": "Alexandria Mineral Oils Company (AMOC)", "name_ar": "الإسكندرية للزيوت المعدنية - أموك", "sector_en": "Energy & Petrochemicals", "sector_ar": "الطاقة والبتروكيماويات"},
-    {"symbol": "SKPC.CA", "name_en": "Sidi Kerir Petrochemicals (Sydpec)", "name_ar": "سيدي كرير للبتروكيماويات - سيدبك", "sector_en": "Petrochemicals & Chemicals", "sector_ar": "البتروكيماويات والكيماويات"},
-    {"symbol": "CIEB.CA", "name_en": "Credit Agricole Egypt", "name_ar": "بنك كريدي أجرِكول مصر", "sector_en": "Banking & Financials", "sector_ar": "القطاع البنكي والمالي"},
-    {"symbol": "ADIB.CA", "name_en": "Abu Dhabi Islamic Bank Egypt (ADIB)", "name_ar": "مصرف أبو ظبي الإسلامي مصر", "sector_en": "Banking & Financials", "sector_ar": "القطاع البنكي والمالي"},
-    {"symbol": "BTFH.CA", "name_en": "Beltone Financial Holding", "name_ar": "بلتون المالية القابضة", "sector_en": "Banking & Financials", "sector_ar": "القطاع البنكي والمالي"},
-    {"symbol": "EFIG.CA", "name_en": "e-finance for Digital & Financial Investments", "name_ar": "إي فاينانس للاستثمارات المالية والرقمية", "sector_en": "Banking & Financials", "sector_ar": "القطاع البنكي والمالي"},
-    {"symbol": "EMFD.CA", "name_en": "Emaar Misr for Development", "name_ar": "إعمار مصر للتنمية", "sector_en": "Real Estate & Construction", "sector_ar": "العقارات والإنشاءات"},
-    {"symbol": "HDBK.CA", "name_en": "Housing & Development Bank", "name_ar": "بنك التعمير والإسكان", "sector_en": "Banking & Financials", "sector_ar": "القطاع البنكي والمالي"},
-    {"symbol": "QNBA.CA", "name_en": "Qatar National Bank Alahli (QNB)", "name_ar": "بنك قطر الوطني الأهلي", "sector_en": "Banking & Financials", "sector_ar": "القطاع البنكي والمالي"},
-    {"symbol": "FAIT.CA", "name_en": "Faisal Islamic Bank of Egypt", "name_ar": "بنك فيصل الإسلامي المصري", "sector_en": "Banking & Financials", "sector_ar": "القطاع البنكي والمالي"},
-    {"symbol": "EGBE.CA", "name_en": "Egyptian Export Development Bank (EXPA)", "name_ar": "البنك المصري لتنمية الصادرات", "sector_en": "Banking & Financials", "sector_ar": "القطاع البنكي والمالي"},
-    {"symbol": "CCAP.CA", "name_en": "Qalaa Holdings", "name_ar": "القلعة للاستثمارات المالية", "sector_en": "Investment & Financials", "sector_ar": "الاستثمار والخدمات المالية"},
-    {"symbol": "CICH.CA", "name_en": "CI Capital Holding", "name_ar": "سي آي كابيتال القابضة", "sector_en": "Banking & Financials", "sector_ar": "القطاع البنكي والمالي"},
-    {"symbol": "BINV.CA", "name_en": "B Investments Holding", "name_ar": "بي إنفستمنتس القابضة", "sector_en": "Investment & Financials", "sector_ar": "الاستثمار والخدمات المالية"},
-    {"symbol": "OCDI.CA", "name_en": "Six of October Development & Investment (SODIC)", "name_ar": "سوديك - السادس من أكتوبر للتنمية", "sector_en": "Real Estate & Construction", "sector_ar": "العقارات والإنشاءات"},
-    {"symbol": "ORHD.CA", "name_en": "Orascom Development Egypt", "name_ar": "أوراسكوم للتنمية مصر", "sector_en": "Real Estate & Construction", "sector_ar": "العقارات والإنشاءات"},
-    {"symbol": "KIMA.CA", "name_en": "Egyptian Chemical Industries (KIMA)", "name_ar": "كيما - الصناعات الكيماوية المصرية", "sector_en": "Petrochemicals & Chemicals", "sector_ar": "البتروكيماويات والكيماويات"},
-    {"symbol": "MCRE.CA", "name_en": "Misr Chemical Industries", "name_ar": "مصر لصناعة الكيماويات", "sector_en": "Petrochemicals & Chemicals", "sector_ar": "البتروكيماويات والكيماويات"},
-    {"symbol": "EGAL.CA", "name_en": "Egypt Aluminium", "name_ar": "مصر للألومنيوم", "sector_en": "Basic Materials & Metals", "sector_ar": "المواد الأساسية والمعادن"},
-    {"symbol": "DOMT.CA", "name_en": "Arab Dairy Products (Domty)", "name_ar": "دومتي - الصناعات الغذائية", "sector_en": "Food & Beverages", "sector_ar": "الأغذية والمشروبات"},
-    {"symbol": "DITN.CA", "name_en": "Delta Sugar", "name_ar": "الدلتا للسكر", "sector_en": "Food & Beverages", "sector_ar": "الأغذية والمشروبات"},
-    {"symbol": "CLHO.CA", "name_en": "Cleopatra Hospital Company", "name_ar": "مستشفى كليوباترا", "sector_en": "Healthcare & Pharmaceuticals", "sector_ar": "الرعاية الصحية والأدوية"},
-    {"symbol": "ISPH.CA", "name_en": "Ibnsina Pharma", "name_ar": "ابن سينا فارما", "sector_en": "Healthcare & Pharmaceuticals", "sector_ar": "الرعاية الصحية والأدوية"},
-    {"symbol": "RMDA.CA", "name_en": "Tenth of Ramadan Pharmaceutical (Rameda)", "name_ar": "رميدا - العاشر من رمضان للأدوية", "sector_en": "Healthcare & Pharmaceuticals", "sector_ar": "الرعاية الصحية والأدوية"},
-    {"symbol": "CSPT.CA", "name_en": "Alexandria Container & Cargo Handling", "name_ar": "الإسكندرية لتداول البضائع والحاويات", "sector_en": "Shipping & Logistics", "sector_ar": "الشحن واللوجستيات"},
-    {"symbol": "ALCN.CA", "name_en": "Canal Shipping Agencies", "name_ar": "القناة للتوكيلات الملاحية", "sector_en": "Shipping & Logistics", "sector_ar": "الشحن واللوجستيات"},
-    
-    # Global Tech Giants
-    {"symbol": "AAPL", "name_en": "Apple Inc.", "name_ar": "شركة أبل", "sector_en": "Global Tech Giants", "sector_ar": "عمالقة التكنولوجيا العالمية"},
-    {"symbol": "NVDA", "name_en": "NVIDIA Corporation", "name_ar": "شركة إنفيديا", "sector_en": "Global Tech Giants", "sector_ar": "عمالقة التكنولوجيا العالمية"},
-    {"symbol": "MSFT", "name_en": "Microsoft Corporation", "name_ar": "مايكروسوفت", "sector_en": "Global Tech Giants", "sector_ar": "عمالقة التكنولوجيا العالمية"},
-    {"symbol": "AMZN", "name_en": "Amazon.com Inc.", "name_ar": "أمازون", "sector_en": "Global Tech Giants", "sector_ar": "عمالقة التكنولوجيا العالمية"},
-    {"symbol": "GOOGL", "name_en": "Alphabet Inc. (Google)", "name_ar": "جوجل - ألفابت", "sector_en": "Global Tech Giants", "sector_ar": "عمالقة التكنولوجيا العالمية"},
-    {"symbol": "TSLA", "name_en": "Tesla Inc.", "name_ar": "تسلا", "sector_en": "Global Tech Giants", "sector_ar": "عمالقة التكنولوجيا العالمية"},
-    {"symbol": "META", "name_en": "Meta Platforms Inc. (Facebook)", "name_ar": "ميتا - فيسبوك", "sector_en": "Global Tech Giants", "sector_ar": "عمالقة التكنولوجيا العالمية"}
+EGX30_STOCKS = [
+    {"symbol": "COMI.CA", "name_en": "Commercial International Bank (CIB)", "name_ar": "البنك التجاري الدولي", "index": "EGX30", "sector": "Banking & Financials"},
+    {"symbol": "FWRY.CA", "name_en": "Fawry Banking & Payment Technology", "name_ar": "فوري لتكنولوجيا المدفوعات", "index": "EGX30", "sector": "Banking & Financials"},
+    {"symbol": "EAST.CA", "name_en": "Eastern Company", "name_ar": "الشرقية - إيسترن كومباني", "index": "EGX30", "sector": "Consumer Goods & Tobacco"},
+    {"symbol": "SWDY.CA", "name_en": "Elsewedy Electric", "name_ar": "السويدي إليكتريك", "index": "EGX30", "sector": "Industrial & Construction"},
+    {"symbol": "MFPC.CA", "name_en": "Misr Fertilisers Production Co (MOPCO)", "name_ar": "مصر لإنتاج السماد - موبكو", "index": "EGX30", "sector": "Petrochemicals & Chemicals"},
+    {"symbol": "ABUK.CA", "name_en": "Abu Qir Fertilizers & Chemical Industries", "name_ar": "أبو قير للأسمدة والصناعات الكيماوية", "index": "EGX30", "sector": "Petrochemicals & Chemicals"},
+    {"symbol": "ETEL.CA", "name_en": "Telecom Egypt (WE)", "name_ar": "المصرية للاتصالات", "index": "EGX30", "sector": "Telecommunications"},
+    {"symbol": "HRHO.CA", "name_en": "EFG Hermes Holding", "name_ar": "إي إف جي القابضة - هيرميس", "index": "EGX30", "sector": "Banking & Financials"},
+    {"symbol": "TMGH.CA", "name_en": "Talaat Moustafa Group Holding (TMG)", "name_ar": "مجموعة طلعت مصطفى القابضة", "index": "EGX30", "sector": "Real Estate & Construction"},
+    {"symbol": "ORAS.CA", "name_en": "Orascom Construction PLC", "name_ar": "أوراسكوم كونستراكشون", "index": "EGX30", "sector": "Industrial & Construction"},
+    {"symbol": "ESRS.CA", "name_en": "Ezz Steel", "name_ar": "عز الصلب", "index": "EGX30", "sector": "Basic Materials & Metals"},
+    {"symbol": "EKHO.CA", "name_en": "Egypt Kuwait Holding", "name_ar": "القابضة المصرية الكويتية", "index": "EGX30", "sector": "Investment & Financials"},
+    {"symbol": "JUFO.CA", "name_en": "Juhayna Food Industries", "name_ar": "جهينة للصناعات الغذائية", "index": "EGX30", "sector": "Food & Beverages"},
+    {"symbol": "HELI.CA", "name_en": "Heliopolis Housing & Development", "name_ar": "مصر الجديدة للإسكان والتعمير", "index": "EGX30", "sector": "Real Estate & Construction"},
+    {"symbol": "MASR.CA", "name_en": "Madinet Masr for Housing & Development", "name_ar": "مدينة مصر للإسكان والتعمير", "index": "EGX30", "sector": "Real Estate & Construction"},
+    {"symbol": "PHDC.CA", "name_en": "Palm Hills Developments", "name_ar": "بالم هيلز للتعمير", "index": "EGX30", "sector": "Real Estate & Construction"},
+    {"symbol": "ORWE.CA", "name_en": "Oriental Weavers Carpets", "name_ar": "النساجون الشرقيون", "index": "EGX30", "sector": "Textiles & Home Goods"},
+    {"symbol": "AMOC.CA", "name_en": "Alexandria Mineral Oils Company (AMOC)", "name_ar": "الإسكندرية للزيوت المعدنية - أموك", "index": "EGX30", "sector": "Energy & Petrochemicals"},
+    {"symbol": "SKPC.CA", "name_en": "Sidi Kerir Petrochemicals (Sydpec)", "name_ar": "سيدي كرير للبتروكيماويات - سيدبك", "index": "EGX30", "sector": "Petrochemicals & Chemicals"},
+    {"symbol": "CIEB.CA", "name_en": "Credit Agricole Egypt", "name_ar": "بنك كريدي أجرِكول مصر", "index": "EGX30", "sector": "Banking & Financials"}
 ]
+
+EGX50_STOCKS = [
+    {"symbol": "ADIB.CA", "name_en": "Abu Dhabi Islamic Bank Egypt (ADIB)", "name_ar": "مصرف أبو ظبي الإسلامي مصر", "index": "EGX50", "sector": "Banking & Financials"},
+    {"symbol": "BTFH.CA", "name_en": "Beltone Financial Holding", "name_ar": "بلتون المالية القابضة", "index": "EGX50", "sector": "Banking & Financials"},
+    {"symbol": "EFIG.CA", "name_en": "e-finance for Digital & Financial Investments", "name_ar": "إي فاينانس للاستثمارات المالية والرقمية", "index": "EGX50", "sector": "Banking & Financials"},
+    {"symbol": "EMFD.CA", "name_en": "Emaar Misr for Development", "name_ar": "إعمار مصر للتنمية", "index": "EGX50", "sector": "Real Estate & Construction"},
+    {"symbol": "HDBK.CA", "name_en": "Housing & Development Bank", "name_ar": "بنك التعمير والإسكان", "index": "EGX50", "sector": "Banking & Financials"},
+    {"symbol": "QNBA.CA", "name_en": "Qatar National Bank Alahli (QNB)", "name_ar": "بنك قطر الوطني الأهلي", "index": "EGX50", "sector": "Banking & Financials"},
+    {"symbol": "FAIT.CA", "name_en": "Faisal Islamic Bank of Egypt", "name_ar": "بنك فيصل الإسلامي المصري", "index": "EGX50", "sector": "Banking & Financials"},
+    {"symbol": "EGBE.CA", "name_en": "Egyptian Export Development Bank (EXPA)", "name_ar": "البنك المصري لتنمية الصادرات", "index": "EGX50", "sector": "Banking & Financials"},
+    {"symbol": "CCAP.CA", "name_en": "Qalaa Holdings", "name_ar": "القلعة للاستثمارات المالية", "index": "EGX50", "sector": "Investment & Financials"},
+    {"symbol": "CICH.CA", "name_en": "CI Capital Holding", "name_ar": "سي آي كابيتال القابضة", "index": "EGX50", "sector": "Banking & Financials"},
+    {"symbol": "BINV.CA", "name_en": "B Investments Holding", "name_ar": "بي إنفستمنتس القابضة", "index": "EGX50", "sector": "Investment & Financials"},
+    {"symbol": "OCDI.CA", "name_en": "Six of October Development & Investment (SODIC)", "name_ar": "سوديك - السادس من أكتوبر للتنمية", "index": "EGX50", "sector": "Real Estate & Construction"},
+    {"symbol": "ORHD.CA", "name_en": "Orascom Development Egypt", "name_ar": "أوراسكوم للتنمية مصر", "index": "EGX50", "sector": "Real Estate & Construction"},
+    {"symbol": "KIMA.CA", "name_en": "Egyptian Chemical Industries (KIMA)", "name_ar": "كيما - الصناعات الكيماوية المصرية", "index": "EGX50", "sector": "Petrochemicals & Chemicals"},
+    {"symbol": "MCRE.CA", "name_en": "Misr Chemical Industries", "name_ar": "مصر لصناعة الكيماويات", "index": "EGX50", "sector": "Petrochemicals & Chemicals"},
+    {"symbol": "EGAL.CA", "name_en": "Egypt Aluminium", "name_ar": "مصر للألومنيوم", "index": "EGX50", "sector": "Basic Materials & Metals"},
+    {"symbol": "DOMT.CA", "name_en": "Arab Dairy Products (Domty)", "name_ar": "دومتي - الصناعات الغذائية", "index": "EGX50", "sector": "Food & Beverages"},
+    {"symbol": "DITN.CA", "name_en": "Delta Sugar", "name_ar": "الدلتا للسكر", "index": "EGX50", "sector": "Food & Beverages"},
+    {"symbol": "CLHO.CA", "name_en": "Cleopatra Hospital Company", "name_ar": "مستشفى كليوباترا", "index": "EGX50", "sector": "Healthcare & Pharmaceuticals"},
+    {"symbol": "ISPH.CA", "name_en": "Ibnsina Pharma", "name_ar": "ابن سينا فارما", "index": "EGX50", "sector": "Healthcare & Pharmaceuticals"},
+    {"symbol": "RMDA.CA", "name_en": "Tenth of Ramadan Pharmaceutical (Rameda)", "name_ar": "رميدا - العاشر من رمضان للأدوية", "index": "EGX50", "sector": "Healthcare & Pharmaceuticals"},
+    {"symbol": "CSPT.CA", "name_en": "Alexandria Container & Cargo Handling", "name_ar": "الإسكندرية لتداول البضائع والحاويات", "index": "EGX50", "sector": "Shipping & Logistics"},
+    {"symbol": "ALCN.CA", "name_en": "Canal Shipping Agencies", "name_ar": "القناة للتوكيلات الملاحية", "index": "EGX50", "sector": "Shipping & Logistics"}
+]
+
+GLOBAL_TECH_STOCKS = [
+    {"symbol": "AAPL", "name_en": "Apple Inc.", "name_ar": "شركة أبل", "index": "GLOBAL_TECH", "sector": "Global Tech Giants"},
+    {"symbol": "NVDA", "name_en": "NVIDIA Corporation", "name_ar": "شركة إنفيديا", "index": "GLOBAL_TECH", "sector": "Global Tech Giants"},
+    {"symbol": "MSFT", "name_en": "Microsoft Corporation", "name_ar": "مايكروسوفت", "index": "GLOBAL_TECH", "sector": "Global Tech Giants"},
+    {"symbol": "AMZN", "name_en": "Amazon.com Inc.", "name_ar": "أمازون", "index": "GLOBAL_TECH", "sector": "Global Tech Giants"},
+    {"symbol": "GOOGL", "name_en": "Alphabet Inc. (Google)", "name_ar": "جوجل - ألفابت", "index": "GLOBAL_TECH", "sector": "Global Tech Giants"},
+    {"symbol": "TSLA", "name_en": "Tesla Inc.", "name_ar": "تسلا", "index": "GLOBAL_TECH", "sector": "Global Tech Giants"},
+    {"symbol": "META", "name_en": "Meta Platforms Inc. (Facebook)", "name_ar": "ميتا - فيسبوك", "index": "GLOBAL_TECH", "sector": "Global Tech Giants"}
+]
+
+ALL_STOCKS_LIST = EGX30_STOCKS + EGX50_STOCKS + GLOBAL_TECH_STOCKS
 
 def search_stocks(query_str: str) -> List[Dict[str, Any]]:
     if not query_str:

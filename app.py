@@ -4,7 +4,7 @@ from datetime import datetime
 from storage.database import init_db, fetch_all, execute_query
 from providers.binance import get_binance_ticker_24hr, get_binance_klines
 from providers.forex import calculate_universal_forex_conversion, fetch_live_usd_egp_rate, fetch_live_rates_all_currencies
-from providers.stocks import get_stock_quote, get_stock_history, search_stocks, ALL_STOCKS_LIST
+from providers.stocks import get_stock_quote, get_stock_history, search_stocks, EGX30_STOCKS, EGX50_STOCKS, GLOBAL_TECH_STOCKS, ALL_STOCKS_LIST
 from providers.gold import get_gold_reference_data
 from services.arbitrage import scan_arbitrage_opportunities
 from services.financial_analyzer import parse_uploaded_financial_file, fetch_stock_financials_yfinance, create_sample_3yr_financial_data, analyze_financial_ratios
@@ -79,7 +79,7 @@ st.sidebar.caption("Binance-Grade Financial Intelligence Terminal" if not is_ar 
 
 nav_options_en = [
     "1. 📊 Live Market Overview",
-    "2. 🏛️ Complete EGX & Global Stock Search",
+    "2. 🏛️ EGX Market Indices & Stocks",
     "3. 💱 Universal Live Forex Calculator",
     "4. 🪙 Live Crypto Trading Feed",
     "5. 🏆 Gold Pricing & Sagha Premium Calculator",
@@ -89,7 +89,7 @@ nav_options_en = [
 
 nav_options_ar = [
     "1. 📊 نظرة عامة أونلاين (Live Overview)",
-    "2. 🏛️ البحث في البورصة المصرية والعالمية (Stock Search)",
+    "2. 🏛️ مؤشرات وأسهم البورصة المصرية (EGX Indices)",
     "3. 💱 الفوركس العالمي لجميع العملات (Universal Forex)",
     "4. 🪙 الكريبتو البث المباشر (Crypto)",
     "5. 🏆 الذهب العالمي وحاسبة سوق الصاغة (Gold & Sagha)",
@@ -153,50 +153,72 @@ if nav.startswith("1."):
     st.markdown("---")
     render_live_crypto_table()
 
-# MODULE 2: STOCK SEARCH (SEARCH BY ARABIC NAME, ENGLISH NAME, OR TICKER)
+# MODULE 2: EGX MARKET INDICES & STOCKS (EGX30, EGX50, GLOBAL TECH + UNIFIED SEARCH)
 elif nav.startswith("2."):
-    title = "🏛️ EGX & Global Stock Search Terminal" if not is_ar else "🏛️ البحث الشامل في البورصة المصرية والعالمية"
-    sub = "Search any company by Arabic name, English name, or Ticker symbol (No Ticker Code required)" if not is_ar else "ابحث باسم الشركة بالعربي، بالإنجليزي، أو بالكود بدون الحاجة لحفظ الرموز"
+    title = "🏛️ EGX Market Indices & Stocks Terminal" if not is_ar else "🏛️ مؤشرات وأسهم البورصة المصرية والعالمية"
+    sub = "Explore EGX30, EGX50, and Global Tech stocks with categorized tabs and universal search" if not is_ar else "تصفح مؤشرات EGX30 و EGX50 والأسهم العالمية مع تبويب دقيق وبحث شامل بالاسم أو الكود"
     render_header(title, sub)
     
-    st.info("💡 **Stock Search Engine:** Type any company name in Arabic (e.g., `فوري`, `طلعت مصطفى`, `السويدي`, `أبو قير`, `جهينة`), English (e.g., `CIB`, `Fawry`, `Swedy`, `Apple`), or Ticker Code." if not is_ar else "💡 **محرك البحث الذكي:** اكتب اسم أي شركة بالعربي (مثل: `فوري`, `طلعت مصطفى`, `السويدي`, `أبو قير`, `جهينة`) أو بالإنجليزي أو بالكود.")
+    # Universal Search Bar
+    search_query = st.text_input("🔍 Universal Stock Search / ابحث عن أي شركة بالاسم أو الكود", value="", placeholder="e.g. فوري / CIB / طلعت مصطفى / Apple / COMI.CA").strip()
     
-    search_query = st.text_input("🔍 Search Company / ابحث عن أي شركة", value="", placeholder="e.g. فوري / CIB / طلعت مصطفى / Apple / COMI.CA").strip()
-    
-    matched_stocks = search_stocks(search_query)
-    
-    stock_options = []
-    for s in matched_stocks:
-        s_en = s.get('name_en', s.get('symbol', ''))
-        s_ar = s.get('name_ar', s.get('symbol', ''))
-        s_sym = s.get('symbol', '')
-        stock_options.append(f"{s_en} | {s_ar} ({s_sym})")
-    
-    selected_option = st.selectbox("Select Company / اختر الشركة", stock_options, index=0)
-    
-    selected_symbol = selected_option.split("(")[-1].replace(")", "").strip()
-    
-    quote = get_stock_quote(selected_symbol)
-    if 'error' in quote:
-        st.error(quote['error'])
-    else:
-        st.subheader(f"📌 {selected_option}")
-        col_a, col_b, col_c = st.columns(3)
-        col_a.metric("Current Price", f"{quote['price']:,.2f} {quote['currency']}", f"{quote['change_pct']:.2f}%")
-        col_b.metric("Timestamp", f"{quote['timestamp']}")
-        col_c.metric("Data Feed Source", f"{quote['source']}")
+    if search_query:
+        matched = search_stocks(search_query)
+        st.subheader(f"🔎 Search Results for: '{search_query}'" if not is_ar else f"🔎 نتائج البحث عن: '{search_query}'")
+        search_options = [f"{s['name_en']} | {s['name_ar']} ({s['symbol']})" for s in matched]
+        selected_option = st.selectbox("Select Company / اختر الشركة", search_options, index=0)
+        selected_symbol = selected_option.split("(")[-1].replace(")", "").strip()
         
-        st.markdown("---")
-        st.subheader("📊 Interactive Candlestick Chart")
-        tf = st.selectbox("Timeframe", ["1mo", "3mo", "6mo", "1y", "2y", "5y"], index=3)
-        df_stock_hist = get_stock_history(selected_symbol, period=tf)
-        
-        if not df_stock_hist.empty:
-            df_stock_hist = calculate_technical_indicators(df_stock_hist)
-            fig_stock = create_candlestick_chart(df_stock_hist, f"Candlestick & SMA (20/50) - {selected_symbol}")
-            st.plotly_chart(fig_stock, use_container_width=True)
+        quote = get_stock_quote(selected_symbol)
+        if 'error' in quote:
+            st.error(quote['error'])
         else:
-            st.warning("Historical chart unavailable for this symbol.")
+            col_a, col_b, col_c = st.columns(3)
+            col_a.metric("Current Price", f"{quote['price']:,.2f} {quote['currency']}", f"{quote['change_pct']:.2f}%")
+            col_b.metric("Timestamp", f"{quote['timestamp']}")
+            col_c.metric("Data Feed Source", f"{quote['source']}")
+            
+            st.markdown("---")
+            st.subheader("📊 Interactive Candlestick Chart")
+            tf = st.selectbox("Timeframe", ["1mo", "3mo", "6mo", "1y", "2y", "5y"], index=3)
+            df_stock_hist = get_stock_history(selected_symbol, period=tf)
+            if not df_stock_hist.empty:
+                df_stock_hist = calculate_technical_indicators(df_stock_hist)
+                fig_stock = create_candlestick_chart(df_stock_hist, f"Candlestick & SMA (20/50) - {selected_symbol}")
+                st.plotly_chart(fig_stock, use_container_width=True)
+            else:
+                st.warning("Historical chart unavailable for this symbol.")
+    else:
+        # Categorized Indices Tabs
+        tab_30, tab_50, tab_global = st.tabs(["📈 EGX 30 Index Stocks", "📊 EGX 50 Index Stocks", "🌍 Global Tech Giants"])
+        
+        def render_index_section(stocks_list, index_name):
+            st.markdown(f"### 📋 {index_name} Components & Live Quotes")
+            options = [f"{s['name_en']} | {s['name_ar']} ({s['symbol']})" for s in stocks_list]
+            sel = st.selectbox(f"Select company in {index_name} / اختر شركة", options, key=f"sel_{index_name}")
+            sym = sel.split("(")[-1].replace(")", "").strip()
+            
+            q = get_stock_quote(sym)
+            if 'error' in q:
+                st.error(q['error'])
+            else:
+                c1, c2, c3 = st.columns(3)
+                c1.metric("Current Price", f"{q['price']:,.2f} {q['currency']}", f"{q['change_pct']:.2f}%")
+                c2.metric("Timestamp", f"{q['timestamp']}")
+                c3.metric("Data Feed Source", f"{q['source']}")
+                
+                st.markdown("---")
+                df_hist = get_stock_history(sym, period="1y")
+                if not df_hist.empty:
+                    df_hist = calculate_technical_indicators(df_hist)
+                    st.plotly_chart(create_candlestick_chart(df_hist, f"Candlestick Chart - {sym}"), use_container_width=True)
+
+        with tab_30:
+            render_index_section(EGX30_STOCKS, "EGX 30")
+        with tab_50:
+            render_index_section(EGX50_STOCKS, "EGX 50")
+        with tab_global:
+            render_index_section(GLOBAL_TECH_STOCKS, "Global Tech Giants")
 
 # MODULE 3: UNIVERSAL LIVE FOREX CALCULATOR
 elif nav.startswith("3."):
@@ -233,11 +255,54 @@ elif nav.startswith("3."):
 
 # MODULE 4: CRYPTO
 elif nav.startswith("4."):
-    title = "🪙 Live Crypto Trading Feed" if not is_ar else "🪙 الكريبتو والعملات الرقمية - بث مباشر (Live Crypto)"
-    sub = "Binance live candlesticks and RSI/SMA technical indicators" if not is_ar else "تحديث الرسم البياني والأسعار لحظياً"
+    title = "🪙 Live Crypto Trading Feed & Binance Market Terminal" if not is_ar else "🪙 أسواق العملات الرقمية والريال تاييم - بث مباشر من باينانس"
+    sub = "Real-time spot prices, 24h volume, candlestick charts, and technical indicators (RSI & SMAs)" if not is_ar else "أسعار سبوت فورية، حجم تداول 24 ساعة، رسوم شمعية ومؤشرات فنية حية مباشرة من Binance"
     render_header(title, sub)
-    sym = st.selectbox("Trading Pair", ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT"])
-    render_live_crypto_chart(sym)
+    
+    st.markdown("### 🔥 All Active Binance USDT Spot Markets" if not is_ar else "🔥 جميع أسواق سبوت USDT النشطة على منصة باينانس")
+    
+    tickers = get_binance_ticker_24hr()
+    if tickers:
+        df_crypto = pd.DataFrame(tickers)
+        # Reorder and format columns
+        df_crypto = df_crypto[['symbol', 'price', 'change_24h_pct', 'high_24h', 'low_24h', 'volume_24h', 'quote_volume_24h']]
+        df_crypto.columns = ['Trading Pair', 'Last Price ($)', '24h Change (%)', '24h High ($)', '24h Low ($)', '24h Volume', '24h Turnover (USDT)']
+        
+        # Search filter within crypto
+        crypto_search = st.text_input("🔍 Filter Crypto Pair / تصفية عملة رقمية", value="", placeholder="e.g. BTC, ETH, SOL, XRP").strip().upper()
+        if crypto_search:
+            df_crypto = df_crypto[df_crypto['Trading Pair'].str.contains(crypto_search)]
+            
+        st.dataframe(df_crypto.sort_values(by='24h Turnover (USDT)', ascending=False), use_container_width=True, height=350)
+    else:
+        st.warning("Unable to fetch live Binance spot data at this moment. Please check network connection.")
+
+    st.markdown("---")
+    st.subheader("📊 Advanced Candlestick Chart & Technical Indicators (Binance Feed)" if not is_ar else "📊 الرسم الشمعي المتقدم والمؤشرات الفنية (بث مباشر من باينانس)")
+    
+    col_c1, col_c2 = st.columns([1, 2])
+    crypto_symbols_list = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "ADAUSDT", "DOGEUSDT", "AVAXUSDT", "LINKUSDT", "DOTUSDT"]
+    selected_crypto_sym = col_c1.selectbox("Select Trading Pair / اختر زوج التداول", crypto_symbols_list, index=0)
+    
+    selected_interval = col_c2.selectbox("Select Timeframe / اختر الإطار الزمني", ["1h", "4h", "1d", "1w"], index=2)
+    
+    # Map interval to binance api
+    interval_map = {"1h": "1h", "4h": "4h", "1d": "1d", "1w": "1w"}
+    
+    df_klines = get_binance_klines(selected_crypto_sym, interval=interval_map.get(selected_interval, "1d"))
+    if not df_klines.empty:
+        df_klines = calculate_technical_indicators(df_klines)
+        
+        # Display current ticker stats
+        single_ticker = get_binance_ticker_24hr(selected_crypto_sym)
+        if single_ticker:
+            st.markdown(f"### **{selected_crypto_sym}** — Live Price: **${single_ticker[0]['price']:,.4f}** ({single_ticker[0]['change_24h_pct']:+.2f}%)")
+            
+        fig_crypto = create_candlestick_chart(df_klines, f"Binance Live Spot - {selected_crypto_sym} ({selected_interval})")
+        st.plotly_chart(fig_crypto, use_container_width=True)
+    else:
+        st.warning(f"Historical klines unavailable for {selected_crypto_sym}.")
+
 
 # MODULE 5: GOLD & SAGHA PREMIUM CALCULATOR
 elif nav.startswith("5."):
@@ -309,7 +374,7 @@ elif nav.startswith("7."):
         df_financials = create_sample_3yr_financial_data()
 
     st.subheader("📋 Standardized Financial Statement View")
-    st.dataframe(df_financials, use_category=True if 'use_category' in globals() else True, use_container_width=True)
+    st.dataframe(df_financials, use_container_width=True)
     
     st.markdown("---")
     if st.button("📊 Calculate Ratios & Run Forecast Model", key="analyze_btn", use_container_width=True):
