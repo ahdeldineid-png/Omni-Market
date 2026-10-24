@@ -19,7 +19,7 @@ PRESET_STOCKS = {
         {"symbol": "EKHO.CA", "name": "القابضة المصرية الكويتية"},
         {"symbol": "JUFO.CA", "name": "جهينة للصناعات الغذائية"},
         {"symbol": "HELI.CA", "name": "مصر الجديدة للإسكان والتعمير"},
-        {"symbol": "MASR.CA", "name": "مدينة مصر للإسكان والتعمير (مدينة نصر سابقاً)"},
+        {"symbol": "MASR.CA", "name": "مدينة مصر للإسكان والتعمير"},
         {"symbol": "PHDC.CA", "name": "بالم هيلز للتعمير"},
         {"symbol": "ORWE.CA", "name": "النساجون الشرقيون للفرش"},
         {"symbol": "AMOC.CA", "name": "الإسكندرية للزيوت المعدنية - أموك"},
@@ -63,7 +63,7 @@ PRESET_STOCKS = {
         {"symbol": "UEGC.CA", "name": "الصعيد العامة للمقاولات والاستثمار"},
         {"symbol": "GPRCO.CA", "name": "مجموعة الجيزة العامة للمقاولات"}
     ],
-    "🧪 Petrochemicals, Chemicals & Fertilizers (البتروكيماويات والأسمدة)": [
+    "🧪 Petrochemicals & Fertilizers (البتروكيماويات والأسمدة)": [
         {"symbol": "MFPC.CA", "name": "مصر لإنتاج السماد - مابكو"},
         {"symbol": "ABUK.CA", "name": "أبو قير للأسمدة والصناعات الكيماوية"},
         {"symbol": "SKPC.CA", "name": "سيدي كرير للبتروكيماويات - سيدبك"},
@@ -120,11 +120,11 @@ def get_stock_quote(symbol: str) -> Dict[str, Any]:
             price = info.get('currentPrice') or info.get('regularMarketPrice') or info.get('previousClose')
             
         if not price or pd.isna(price):
-            hist = ticker.history(period='1d')
+            hist = ticker.history(period='5d')
             if not hist.empty:
                 price = float(hist['Close'].iloc[-1])
             else:
-                return {'error': f'Live price unavailable for ticker {symbol}', 'symbol': symbol}
+                return {'error': f'Live price feed unavailable for ticker {symbol}', 'symbol': symbol}
 
         now_str = datetime.now(timezone.utc).strftime("%H:%M:%S UTC")
         prev_close = ticker.fast_info.get('previous_close') or price
@@ -136,10 +136,7 @@ def get_stock_quote(symbol: str) -> Dict[str, Any]:
             'price': float(price),
             'currency': 'EGP' if symbol.endswith('.CA') else 'USD',
             'change_pct': round(float(change_pct), 2),
-            'market_cap': ticker.fast_info.get('market_cap', 'N/A'),
-            'pe_ratio': 'N/A',
-            'sector': 'N/A',
-            'source': 'Yahoo Finance Live Feed',
+            'source': 'Exchange Market Feed (Yahoo Finance Live)',
             'timestamp': now_str
         }
     except Exception as e:

@@ -3,60 +3,60 @@ import yfinance as yf
 from datetime import datetime, timezone
 from typing import Dict, Any
 
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+}
+
 def fetch_live_rates_all_currencies(base_currency: str = "USD") -> Dict[str, float]:
     base = base_currency.upper()
     rates = {base: 1.0}
     
+    # Provider 1: Open ER API
     try:
-        resp = requests.get(f"https://open.er-api.com/v6/latest/{base}", timeout=5)
+        resp = requests.get(f"https://open.er-api.com/v6/latest/{base}", headers=HEADERS, timeout=4)
         if resp.status_code == 200:
             data = resp.json()
-            fetched_rates = data.get('rates', {})
-            if fetched_rates:
-                for curr, rate in fetched_rates.items():
-                    try:
-                        rates[curr] = float(rate)
-                    except (ValueError, TypeError):
-                        pass
+            fetched = data.get('rates', {})
+            if fetched:
+                for c, r in fetched.items():
+                    rates[c] = float(r)
                 return rates
     except Exception:
         pass
 
+    # Provider 2: ExchangeRate-API
     try:
-        resp = requests.get(f"https://api.exchangerate-api.com/v4/latest/{base}", timeout=5)
+        resp = requests.get(f"https://api.exchangerate-api.com/v4/latest/{base}", headers=HEADERS, timeout=4)
         if resp.status_code == 200:
-            data = resp.json()
-            fetched_rates = data.get('rates', {})
-            if fetched_rates:
-                for curr, rate in fetched_rates.items():
-                    try:
-                        rates[curr] = float(rate)
-                    except (ValueError, TypeError):
-                        pass
+            fetched = resp.json().get('rates', {})
+            if fetched:
+                for c, r in fetched.items():
+                    rates[c] = float(r)
                 return rates
     except Exception:
         pass
 
-    major_tickers = {
-        'EUR': 'EURUSD=X', 'GBP': 'GBPUSD=X', 'EGP': 'USDEGP=X',
-        'JPY': 'JPY=X', 'CAD': 'CAD=X', 'AUD': 'AUD=X',
-        'CHF': 'CHF=X', 'SAR': 'SAR=X', 'AED': 'AED=X', 'KWD': 'KWD=X'
-    }
-    for curr, ticker_symbol in major_tickers.items():
-        try:
-            ticker = yf.Ticker(ticker_symbol)
-            price = ticker.fast_info.get('last_price')
-            if price and price > 0:
-                if curr in ['EUR', 'GBP']:
-                    rates[curr] = 1.0 / float(price) if base == 'USD' else float(price)
-                else:
-                    rates[curr] = float(price)
-        except Exception:
-            pass
+    # Provider 3: Frankfurter API (Major Currencies)
+    try:
+        resp = requests.get(f"https://api.frankfurter.app/latest?from={base}", headers=HEADERS, timeout=4)
+        if resp.status_code == 200:
+            fetched = resp.json().get('rates', {})
+            if fetched:
+                for c, r in fetched.items():
+                    rates[c] = float(r)
+                return rates
+    except Exception:
+        pass
 
     return rates
 
 def fetch_live_usd_egp_rate() -> float:
+    # 1. Try ExchangeRate API
+    rates = fetch_live_rates_all_currencies("USD")
+    if "EGP" in rates and rates["EGP"] > 0:
+        return round(rates["EGP"], 2)
+
+    # 2. Try yfinance
     try:
         ticker = yf.Ticker("USDEGP=X")
         price = ticker.fast_info.get('last_price')
@@ -65,8 +65,7 @@ def fetch_live_usd_egp_rate() -> float:
     except Exception:
         pass
 
-    rates = fetch_live_rates_all_currencies("USD")
-    return round(rates.get("EGP", 50.0), 2)
+    return 50.0
 
 def calculate_universal_forex_conversion(amount: float, from_curr: str, to_curr: str) -> Dict[str, Any]:
     from_c = from_curr.upper()
@@ -85,14 +84,11 @@ def calculate_universal_forex_conversion(amount: float, from_curr: str, to_curr:
 
     converted_amount = amount * exchange_rate
 
-    egp_rate_usd = rates_from_base.get("EGP") if from_c == "USD" else None
-    if not egp_rate_usd:
-        usd_rates = fetch_live_rates_all_currencies("USD")
-        egp_rate_usd = usd_rates.get("EGP", 50.0)
+    usd_rates = fetch_live_rates_all_currencies("USD")
+    egp_rate_usd = usd_rates.get("EGP", 50.0)
 
-    rates_from_usd = fetch_live_rates_all_currencies("USD")
-    from_rate_to_usd = rates_from_usd.get(from_c, 1.0)
-    to_rate_to_usd = rates_from_usd.get(to_c, 1.0)
+    from_rate_to_usd = usd_rates.get(from_c, 1.0)
+    to_rate_to_usd = usd_rates.get(to_c, 1.0)
 
     from_in_usd = (amount / from_rate_to_usd) if from_rate_to_usd > 0 else amount
     from_in_egp = from_in_usd * egp_rate_usd
@@ -109,6 +105,6 @@ def calculate_universal_forex_conversion(amount: float, from_curr: str, to_curr:
         'from_amount_in_egp': round(from_in_egp, 2),
         'to_amount_in_egp': round(to_in_egp, 2),
         'live_usd_egp': round(egp_rate_usd, 2),
-        'source': 'Universal Live Global Forex Feed',
+        'source': 'Universal Multi-Feed Live Forex Engine',
         'timestamp': now_str
     }

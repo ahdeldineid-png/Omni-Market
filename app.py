@@ -12,16 +12,13 @@ from services.analytics import calculate_technical_indicators
 from ui.components import render_header
 from ui.charts import create_candlestick_chart, create_forecast_chart
 
-st.set_page_config(page_title="Arbitrage Hub Financial Pro", page_icon="⚡", layout="wide")
+st.set_page_config(page_title="Arbitrage Hub Precision Live", page_icon="⚡", layout="wide")
 
-# PRO FINANCIAL DARK THEME & ANIMATED FLOATING DOLLAR REFRESH BUTTON CSS
 st.markdown("""
 <style>
-    /* Main Background & Typography */
     .stApp { background-color: #0B0E14; color: #E5E7EB; font-family: 'Inter', -apple-system, sans-serif; }
     .stSidebar { background-color: #111827 !important; border-right: 1px solid #1F2937; }
     
-    /* Metrics Styling */
     div[data-testid="stMetricValue"] { 
         color: #00FF87 !important; 
         font-family: 'JetBrains Mono', monospace; 
@@ -34,7 +31,6 @@ st.markdown("""
         font-size: 12px;
     }
     
-    /* Smooth Floating Animated Refresh Button */
     @keyframes bounceFloat {
         0% { transform: translateY(0px) scale(1); box-shadow: 0 4px 12px rgba(0,255,135,0.2); }
         50% { transform: translateY(-6px) scale(1.02); box-shadow: 0 10px 20px rgba(0,255,135,0.4); }
@@ -64,12 +60,6 @@ st.markdown("""
         filter: brightness(1.15);
     }
 
-    /* Cards & Containers */
-    .element-container, .stDataFrame {
-        border-radius: 10px;
-    }
-    
-    /* Tabs */
     button[data-baseweb="tab"] {
         color: #9CA3AF !important;
         font-weight: 600 !important;
@@ -91,7 +81,6 @@ is_ar = (lang_choice == "العربية")
 
 st.sidebar.markdown("---")
 
-# ANIMATED DOLLAR REFRESH BUTTON
 refresh_btn_label = "💵↗️ Refresh Live Rates / تنشيط الأسعار اللحظية" if not is_ar else "💵↗️ تحديث الأسعار والأسواق أونلاين"
 if st.sidebar.button(refresh_btn_label, key="refresh_live_btn", use_container_width=True):
     st.cache_data.clear()
@@ -108,7 +97,7 @@ nav_options_en = [
     "2. 🏛️ Complete EGX & Global Stocks",
     "3. 💱 Universal Live Forex Calculator",
     "4. 🪙 Live Crypto Markets",
-    "5. 🏆 Gold Pricing & Bullion Calculator",
+    "5. 🏆 Gold Pricing & Sagha Premium Calculator",
     "6. 🚀 Arbitrage Opportunity Scanner",
     "7. 📈 Financial Statements & Precision Ratios"
 ]
@@ -118,14 +107,13 @@ nav_options_ar = [
     "2. 🏛️ جميع أسهم البورصة المصرية والعالمية (EGX Stocks)",
     "3. 💱 الفوركس العالمي لجميع العملات (Universal Forex)",
     "4. 🪙 الكريبتو البث المباشر (Crypto)",
-    "5. 🏆 الذهب والرموز وحاسبة العيارات (Gold)",
+    "5. 🏆 الذهب العالمي وحاسبة سوق الصاغة (Gold & Sagha)",
     "6. 🚀 مكتشف الفرص اللحظي (Arbitrage Scanner)",
     "7. 📈 القوائم المالية والتحليل المالي (Financial Statements)"
 ]
 
 nav = st.sidebar.radio("Navigation / القائمة", nav_options_ar if is_ar else nav_options_en)
 
-# REAL-TIME LIVE FRAGMENTS
 @st.fragment(run_every="3s")
 def render_live_overview_cards():
     c1, c2, c3, c4 = st.columns(4)
@@ -186,6 +174,8 @@ elif nav.startswith("2."):
     sub = "Real-time quotes, technical indicators, and interactive charts for ALL EGX stocks" if not is_ar else "أسعار حية ومباشرة ورسوم بيانية لجميع أسهم البورصة المصرية بدون استثناء"
     render_header(title, sub)
     
+    st.info("💡 **Market Notice / تنبيه الأسواق:** Free exchange feeds (Yahoo Finance) have an intrinsic 15-minute delay during trading hours. On weekends (Saturday/Sunday), prices reflect the last official close." if not is_ar else "💡 **تنبيه:** ببيانات الأسهم المجانية من Yahoo Finance تُعرض بتأخير 15 دقيقة طوال ساعات التداول الرسمية، وفي عطلات نهاية الأسبوع (السبت والأحد) تُعرض أسعار إغلاق آخر جلسة رسمية (الجمعة).")
+    
     st.markdown("### 🔍 Select Sector / Stock (اختيار القطاع والسهم)")
     category_names = list(PRESET_STOCKS.keys())
     selected_category = st.selectbox("Select Sector / اختر القطاع", category_names, index=0)
@@ -229,7 +219,7 @@ elif nav.startswith("3."):
     render_header(title, sub)
     
     live_usd_egp = fetch_live_usd_egp_rate()
-    st.info(f"💡 **Live Market USD/EGP Reference Rate:** `1 USD = {live_usd_egp:.2f} EGP`")
+    st.info(f"💡 **Live Market USD/EGP Reference Rate:** `1 USD = {live_usd_egp:.2f} EGP` *(Official Interbank Live Feed)*")
     
     st.subheader("🌐 Global Currency Converter" if not is_ar else "🌐 التحويل المباشر بين أي عملتين في العالم")
     c1, c2, c3 = st.columns(3)
@@ -263,16 +253,20 @@ elif nav.startswith("4."):
     sym = st.selectbox("Trading Pair / زوج التداول", ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT"])
     render_live_crypto_chart(sym)
 
-# MODULE 5: GOLD
+# MODULE 5: GOLD & SAGHA PREMIUM CALCULATOR
 elif nav.startswith("5."):
-    title = "🏆 Real-Time Gold Pricing & Gram Calculator" if not is_ar else "🏆 أسعار الذهب وحاسبة الجرام بالجنيه المصري"
-    sub = "Global Gold Spot & EGP Gram Prices auto-recalculated live" if not is_ar else "تحديث تلقائي لجرام الذهب بناءً على الأونصة عالمياً والأن المباشر لـ USD/EGP"
+    title = "🏆 Real-Time Gold Pricing & Sagha Premium Calculator" if not is_ar else "🏆 الذهب العالمي وحاسبة أسعار سوق الصاغة المصرية"
+    sub = "Global Gold Spot linked to USD/EGP with custom Sagha local market premium adjustment" if not is_ar else "الربط بين الأونصة عالمياً والأن المباشر لـ USD/EGP مع حاسبة فرق الصاغة المحلي"
     render_header(title, sub)
-    gold = get_gold_reference_data()
+    
+    st.sidebar.markdown("### 🏛️ Egyptian Sagha Adjustment (فرق الصاغة)")
+    sagha_premium = st.sidebar.slider("Sagha Local Premium % / نسبة علاوة الصاغة المحلية", min_value=0.0, max_value=25.0, value=0.0, step=0.5, help="تستخدم لتسوية الفرق بين سعر الذهب العالمي المحسوب وسعر محلات الصاغة المحلية في مصر إن وجد.")
+    
+    gold = get_gold_reference_data(sagha_premium_pct=sagha_premium)
     
     col_g1, col_g2 = st.columns(2)
     col_g1.metric("Global Gold Spot (USD/oz)", f"${gold['usd_per_troy_oz']:,.2f}")
-    col_g2.metric("24K Gold Gram (EGP)", f"{gold['indicative_egp_per_gram_24k']:,.2f} EGP")
+    col_g2.metric("24K Gold Gram (EGP)", f"{gold['indicative_egp_per_gram_24k']:,.2f} EGP", f"+{sagha_premium}% Sagha Premium" if sagha_premium > 0 else "Official Live Spot")
     
     st.subheader("EGP Karat Reference Prices (Live)" if not is_ar else "أسعار العيارات الاسترشادية بالجنيه المصري (مباشر)")
     st.table(pd.DataFrame([gold['karats_indicative_egp']]))
