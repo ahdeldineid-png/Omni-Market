@@ -568,59 +568,61 @@ elif nav.startswith("9."):
 # MODULE 10: DAILY REPORTS & NOTIFICATIONS
 # MODULE 11: MACRO RATES & INFLATION (RATES SECTION)
 # MODULE 11: MACRO RATES & INFLATION (RATES SECTION)
+# MODULE 11: MACRO RATES & INFLATION (RATES SECTION)
+# MODULE 11: MACRO RATES & INFLATION (RATES SECTION)
 elif nav.startswith("11."):
     if is_ar:
         title = "أسعار الفائدة ومعدلات التضخم المحلية والعالمية (Macro Rates)"
-        sub = "متابعة دقيقة وشاملة ومحدثة لحظياً لأسعار الفائدة للبنك المركزي المصري والاحتياطي الفيدرالي ومؤشرات التضخم"
+        sub = "متابعة دقيقة وشاملة لأسعار الفائدة للبنك المركزي المصري والاحتياطي الفيدرالي الأمريكي ومعدلات التضخم بمصر والعالم"
     else:
         title = "Global & Local Interest Rates & Inflation (Rates)"
-        sub = "Real-time updated tracking of Central Bank Interest Rates (CBE & Fed) and Inflation Metrics"
+        sub = "Comprehensive tracking of Central Bank Interest Rates (CBE & Fed) and Inflation Metrics"
     render_header(title, sub, is_ar=is_ar)
     
     if is_ar:
-        st.subheader("مؤشرات السياسة النقدية وأسعار الفائدة المحدثة (محدث تلقائياً)")
+        st.subheader("مؤشرات السياسة النقدية وأسعار الفائدة الحالية")
     else:
-        st.subheader("Monetary Policy & Updated Current Interest Rates")
-    
-    live_usd_val = fetch_live_usd_egp_rate()
+        st.subheader("Monetary Policy & Current Interest Rates")
     
     col_rate1, col_rate2, col_rate3, col_rate4 = st.columns(4)
     if is_ar:
-        col_rate1.metric("سعر الفائدة (البنك المركزي المصري)", "27.25%", "الإيداع لليلة واحدة / CBE Rate")
-        col_rate2.metric("سعر الفائدة (الفيدرالي الأمريكي)", "4.50%", "نطاق الفائدة المستهدف / US Fed Rate")
-        col_rate3.metric("معدل التضخم السنوي (مصر)", "24.10%", "الجهاز المركزي للتعبئة العامة والإحصاء")
-        col_rate4.metric("معدل التضخم السنوي (العالمي)", "2.70%", "متوسط الدول الكبرى / Global CPI")
+        col_rate1.metric("سعر الفائدة (البنك المركزي المصري)", "19.00%", "الإيداع لليلة واحدة / CBE Rate")
+        col_rate2.metric("سعر الفائدة (الفيدرالي الأمريكي)", "4.00%", "نطاق الفائدة المستهدف / US Fed Rate")
+        col_rate3.metric("معدل التضخم السنوي (مصر)", "14.10%", "الجهاز المركزي للتعبئة العامة والإحصاء")
+        col_rate4.metric("معدل التضخم السنوي (العالمي)", "4.70%", "متوسط الدول الكبرى / Global CPI")
     else:
-        col_rate1.metric("CBE Interest Rate", "27.25%", "Overnight Deposit Rate")
-        col_rate2.metric("US Fed Interest Rate", "4.50%", "Target Federal Funds Rate")
-        col_rate3.metric("Egypt Annual Inflation", "24.10%", "CAPMAS CPI Benchmark")
-        col_rate4.metric("Global Annual Inflation", "2.70%", "Major Economies Average")
+        col_rate1.metric("CBE Interest Rate", "19.00%", "Overnight Deposit Rate")
+        col_rate2.metric("US Fed Interest Rate", "4.00%", "Target Federal Funds Rate")
+        col_rate3.metric("Egypt Annual Inflation", "14.10%", "CAPMAS CPI Benchmark")
+        col_rate4.metric("Global Annual Inflation", "4.70%", "Major Economies Average")
     
     st.markdown("---")
     if is_ar:
-        st.subheader("جدول مقارنة المؤشرات الاقتصادية الكلية (محدث لعام 2026)")
+        st.subheader("جدول مقارنة المؤشرات الاقتصادية الكلية الشاملة")
     else:
-        st.subheader("Comprehensive Macroeconomic Comparison Table (2026 Updated)")
+        st.subheader("Comprehensive Macroeconomic Comparison Table")
+    
+    live_usd_val = fetch_live_usd_egp_rate()
     
     if is_ar:
         macro_data = [
             {
                 "المؤشر / Indicator": "سعر الفائدة الأساسي (Interest Rate)",
-                "المرجع المحلي (مصر / CBE)": "27.25% (إيداع) / 28.25% (إقراض)",
-                "المرجع العالمي (أمريكا / US Fed)": "4.50% - 4.75%",
+                "المرجع المحلي (مصر / CBE)": "19.00% (إيداع) / 20.00% (إقراض)",
+                "المرجع العالمي (أمريكا / US Fed)": "4.00%",
                 "التأثير المباشر على الاستثمار": "تحديد تكلفة الفرصة البديلة وعوائد أدوات الدخل الثابت والأسهم."
             },
             {
                 "المؤشر / Indicator": "معدل التضخم السنوي (Inflation Rate)",
-                "المرجع المحلي (مصر / CBE)": "24.10%",
-                "المرجع العالمي (أمريكا / Global)": "2.70%",
-                "التأثير المباشر على الاستثمار": "قياس تآكل القوة الشرائية وتحديد العائد الحقيقي الصافي للمحفظة."
+                "المرجع المحلي (مصر / CBE)": "14.10%",
+                "المرجع العالمي (أمريكا / Global)": "4.70%",
+                "التأثير المباشر على الاستثمار": "قياس تآكل القوة الشرائية وتحديد العائد الحقيقي الصافي."
             },
             {
                 "المؤشر / Indicator": "احتياطي النقد الأجنبي (Foreign Reserves)",
-                "المرجع المحلي (مصر / CBE)": "46.9 مليار دولار",
+                "المرجع المحلي (مصر / CBE)": "46.7 مليار دولار",
                 "المرجع العالمي (أمريكا / US)": "تغطية عالمية مستقرة",
-                "التأثير المباشر على الاستثمار": "دعم استقرار سعر الصرف وتوفير العملة للاستيراد وسداد الالتزامات."
+                "التأثير المباشر على الاستثمار": "دعم استقرار سعر الصرف وتوفير العملة للاستيراد وتغطية الالتزامات."
             },
             {
                 "المؤشر / Indicator": "سعر صرف الدولار الرسمي (FOREX USD/EGP)",
@@ -633,19 +635,19 @@ elif nav.startswith("11."):
         macro_data = [
             {
                 "Indicator": "Benchmark Interest Rate",
-                "Local (Egypt / CBE)": "27.25% (Deposit) / 28.25% (Lending)",
-                "Global (USA / US Fed)": "4.50% - 4.75%",
+                "Local (Egypt / CBE)": "19.00% (Deposit) / 20.00% (Lending)",
+                "Global (USA / US Fed)": "4.00%",
                 "Direct Investment Impact": "Determines opportunity cost of capital and fixed-income yields."
             },
             {
                 "Indicator": "Annual Inflation Rate",
-                "Local (Egypt / CBE)": "24.10%",
-                "Global (USA / Global)": "2.70%",
+                "Local (Egypt / CBE)": "14.10%",
+                "Global (USA / Global)": "4.70%",
                 "Direct Investment Impact": "Measures purchasing power erosion and determines real net return."
             },
             {
                 "Indicator": "Foreign Exchange Reserves",
-                "Local (Egypt / CBE)": "$46.9 Billion",
+                "Local (Egypt / CBE)": "$46.7 Billion",
                 "Global (USA / US)": "Stable Global Liquidity",
                 "Direct Investment Impact": "Supports exchange rate stability and import financing."
             },
@@ -661,18 +663,18 @@ elif nav.startswith("11."):
     
     st.markdown("---")
     if is_ar:
-        st.markdown("### التحليل الاستثماري الشامل لتأثير الفائدة والتضخم (تحديث دوري):")
+        st.markdown("### التحليل الاستثماري الشامل لتأثير الفائدة والتضخم:")
         st.markdown("""
-        * **فائدة البنك المركزي المصري (27.25%):** تفرض تكلفة تمويل مرتفعة على الشركات، مما يجعل الاستثمار في الأسهم ذات التدفقات النقدية القوية والعائد التشغيلي العالي هو الخيار الأفضل لتجاوز تكلفة الأموال.
-        * **فائدة الفيدرالي الأمريكي (4.50%):** توجه تدفقات الأموال الساخنة نحو أدوات الدخل الثابت بالدولار أو تشجع الأسواق الناشئة مع استقرار دورة التيسير النقدي.
-        * **التضخم (24.10%):** يعزز جاذبية الذهب والأصول الحقيقية (العقارات والأسهم القيادية) كملاذات آمنة لحماية رأس المال من التآكل.
+        * **فائدة البنك المركزي المصري (19.00%):** تفرض تكلفة تمويل على الشركات، مما يجعل الاستثمار في الأسهم ذات التدفقات النقدية القوية هو الخيار الأفضل لتجاوز تكلفة الأموال.
+        * **فائدة الفيدرالي الأمريكي (4.00%):** توجه تدفقات الأموال نحو الأدوات الدولارية أو تشجع الأسواق الناشئة.
+        * **التضخم (14.10%):** يعزز جاذبية الذهب والأصول الحقيقية كملاذات آمنة لحماية رأس المال من التآكل.
         """)
     else:
         st.markdown("### Investment Analysis of Rates & Inflation:")
         st.markdown("""
-        * **CBE Rate (27.25%):** High cost of capital favors companies with strong cash flows and low debt-to-equity ratios.
-        * **Fed Rate (4.50%):** Influences global liquidity flows into emerging markets.
-        * **Inflation (24.10%):** Drives demand for gold and defensive equities as inflation hedges.
+        * **CBE Rate (19.00%):** Cost of capital favors companies with strong cash flows.
+        * **Fed Rate (4.00%):** Influences global liquidity flows.
+        * **Inflation (14.10%):** Drives demand for gold and defensive equities.
         """)
 
 
