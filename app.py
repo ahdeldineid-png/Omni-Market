@@ -34,12 +34,36 @@ st.markdown("""
     .stSidebar { 
         background-color: #0F1319 !important; 
         border-right: 2px solid #D4AF37 !important; 
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
     
-    .stSidebar .stRadio label {
+    /* Luxury Hover Animation for Sidebar Navigation / Radio Options */
+    .stSidebar .stRadio div[role="radiogroup"] > label {
+        background-color: transparent !important;
+        border-radius: 10px !important;
+        padding: 8px 12px !important;
+        margin-bottom: 6px !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        border: 1px solid transparent !important;
+    }
+    
+    .stSidebar .stRadio div[role="radiogroup"] > label:hover {
+        background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(170, 119, 28, 0.25) 100%) !important;
+        border: 1px solid #D4AF37 !important;
+        transform: translateX(6px) scale(1.02) !important;
+        box-shadow: 0 4px 20px rgba(212, 175, 55, 0.25) !important;
+    }
+    
+    .stSidebar .stRadio label span {
         color: #E2E8F0 !important;
         font-weight: 600 !important;
-        font-size: 15px !important;
+        font-size: 14px !important;
+        transition: color 0.3s ease !important;
+    }
+    
+    .stSidebar .stRadio div[role="radiogroup"] > label:hover span {
+        color: #F3BA2F !important;
+        text-shadow: 0 0 10px rgba(243, 186, 47, 0.5);
     }
     
     /* High Contrast Headers */
@@ -85,6 +109,12 @@ st.markdown("""
         border-radius: 8px !important;
         border: none !important;
         box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
+        transition: all 0.3s ease !important;
+    }
+    
+    .stButton>button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5) !important;
     }
     
     .stDataFrame { 
@@ -113,7 +143,7 @@ if st.sidebar.button(refresh_btn_label, key="refresh_live_btn", use_container_wi
 cairo_time_str = (datetime.now(timezone.utc) + timedelta(hours=3)).strftime("%I:%M:%S %p (توقيت القاهرة)")
 st.sidebar.caption(f"آخر تحديث: {cairo_time_str}" if is_ar else f"Last Refreshed: {cairo_time_str}")
 st.sidebar.markdown("---")
-st.sidebar.title("Arbitrage Hub Pro")
+st.sidebar.markdown("<h2 style='color: #D4AF37; text-align: center; margin-bottom: 0;'>Omni-Market</h2><p style='text-align: center; color: #94A3B8; font-size: 12px; margin-top: 2px;'>Pro Intelligence Terminal</p>", unsafe_allow_html=True)
 
 nav_options_ar = [
     "1. شاشة المراقبة اللحظية (Live Overview)",
