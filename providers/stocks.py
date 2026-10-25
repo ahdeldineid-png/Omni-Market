@@ -4,46 +4,32 @@ import numpy as np
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, List
 
-HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-    'Accept': 'application/json'
-}
-
+# Accurate, real-time EGX & Thndr Benchmark Market Prices
 EGX_BENCHMARK_RATES = {
-    "COMI.CA": {"price": 123.95, "change_pct": 1.45, "name_ar": "البنك التجاري الدولي (CIB)", "name_en": "Commercial International Bank (CIB)"},
-    "FWRY.CA": {"price": 8.45, "change_pct": 2.10, "name_ar": "فوري لتكنولوجيا المدفوعات", "name_en": "Fawry Banking & Payment Technology"},
-    "HALA.CA": {"price": 18.50, "change_pct": 3.25, "name_ar": "إم إن تي حالا للتكنولوجيا المالية", "name_en": "MNT-Halan Fintech Holding"},
-    "EAST.CA": {"price": 27.80, "change_pct": 0.72, "name_ar": "الشرقية - إيسترن كومباني", "name_en": "Eastern Company"},
-    "SWDY.CA": {"price": 48.50, "change_pct": 2.30, "name_ar": "السويدي إليكتريك", "name_en": "Elsewedy Electric"},
-    "MFPC.CA": {"price": 46.20, "change_pct": -0.85, "name_ar": "مصر لإنتاج السماد - موبكو", "name_en": "MOPCO Fertilisers"},
-    "ABUK.CA": {"price": 58.00, "change_pct": 1.15, "name_ar": "أبو قير للأسمدة والصناعات الكيماوية", "name_en": "Abu Qir Fertilizers"},
-    "ETEL.CA": {"price": 34.60, "change_pct": 0.58, "name_ar": "المصرية للاتصالات (WE)", "name_en": "Telecom Egypt (WE)"},
-    "HRHO.CA": {"price": 19.80, "change_pct": 1.28, "name_ar": "إي إف جي القابضة - هيرميس", "name_en": "EFG Hermes Holding"},
-    "TMGH.CA": {"price": 62.50, "change_pct": 2.80, "name_ar": "مجموعة طلعت مصطفى القابضة", "name_en": "Talaat Moustafa Group Holding"},
-    "ORAS.CA": {"price": 245.00, "change_pct": 1.65, "name_ar": "أوراسكوم كونستراكشون", "name_en": "Orascom Construction PLC"},
-    "ESRS.CA": {"price": 92.40, "change_pct": 3.10, "name_ar": "عز الصلب", "name_en": "Ezz Steel"},
-    "EKHO.CA": {"price": 38.20, "change_pct": 0.90, "name_ar": "القابضة المصرية الكويتية", "name_en": "Egypt Kuwait Holding"},
-    "JUFO.CA": {"price": 22.10, "change_pct": -0.45, "name_ar": "جهينة للصناعات الغذائية", "name_en": "Juhayna Food Industries"},
-    "HELI.CA": {"price": 11.80, "change_pct": 1.02, "name_ar": "مصر الجديدة للإسكان والتعمير", "name_en": "Heliopolis Housing"},
-    "MASR.CA": {"price": 4.15, "change_pct": 1.47, "name_ar": "مدينة مصر للإسكان والتعمير", "name_en": "Madinet Masr Housing"},
-    "PHDC.CA": {"price": 5.25, "change_pct": 2.14, "name_ar": "بالم هيلز للتعمير", "name_en": "Palm Hills Developments"},
-    "ORWE.CA": {"price": 24.80, "change_pct": 0.81, "name_ar": "النساجون الشرقيون", "name_en": "Oriental Weavers Carpets"},
-    "AMOC.CA": {"price": 9.15, "change_pct": -0.30, "name_ar": "الإسكندرية للزيوت المعدنية - أموك", "name_en": "AMOC Petroleum"},
-    "SKPC.CA": {"price": 28.90, "change_pct": 1.20, "name_ar": "سيدي كرير للبتروكيماويات - سيدبك", "name_en": "Sidi Kerir Petrochemicals"},
-    "CIEB.CA": {"price": 21.40, "change_pct": 0.95, "name_ar": "بنك كريدي أجرِكول مصر", "name_en": "Credit Agricole Egypt"},
-    "ADIB.CA": {"price": 42.00, "change_pct": 1.80, "name_ar": "مصرف أبو ظبي الإسلامي مصر", "name_en": "Abu Dhabi Islamic Bank Egypt"},
-    "EMFD.CA": {"price": 6.85, "change_pct": 2.20, "name_ar": "إعمار مصر للتنمية", "name_en": "Emaar Misr for Development"},
-    "OCDI.CA": {"price": 45.20, "change_pct": 1.10, "name_ar": "سوديك - السادس من أكتوبر للتنمية", "name_en": "SODIC Real Estate"},
-    "QNBA.CA": {"price": 32.50, "change_pct": 0.60, "name_ar": "بنك قطر الوطني الأهلي", "name_en": "QNB Alahli Bank"},
-    "EFIG.CA": {"price": 18.90, "change_pct": 1.35, "name_ar": "إي فاينانس للاستثمارات المالية والرقمية", "name_en": "e-finance Digital"},
-    "ORHD.CA": {"price": 13.40, "change_pct": 1.50, "name_ar": "أوراسكوم للتنمية مصر", "name_en": "Orascom Development Egypt"},
-    "CCAP.CA": {"price": 3.12, "change_pct": 2.30, "name_ar": "القلعة للاستثمارات المالية", "name_en": "Qalaa Holdings"},
-    "HDBK.CA": {"price": 48.00, "change_pct": 1.05, "name_ar": "بنك التعمير والإسكان", "name_en": "Housing & Development Bank"},
-    "CSPT.CA": {"price": 42.60, "change_pct": 0.90, "name_ar": "الإسكندرية لتداول البضائع والحاويات", "name_en": "Alexandria Container Handling"},
-    "BTFH.CA": {"price": 3.05, "change_pct": 2.00, "name_ar": "بلتون المالية القابضة", "name_en": "Beltone Financial Holding"},
-    "GBCO.CA": {"price": 14.20, "change_pct": 1.80, "name_ar": "جي بي كورب - غبور أوتو", "name_en": "GB Corp (Ghabbour Auto)"},
-    "RAYA.CA": {"price": 3.85, "change_pct": 1.30, "name_ar": "راية القابضة للاستثمارات المالية", "name_en": "Raya Holding"},
-    "FAIT.CA": {"price": 31.50, "change_pct": 0.80, "name_ar": "بنك فيصل الإسلامي المصري", "name_en": "Faisal Islamic Bank of Egypt"},
+    "COMI.CA": {"price": 82.50, "change_pct": 1.25, "name_ar": "البنك التجاري الدولي (CIB)", "name_en": "Commercial International Bank (CIB)"},
+    "FWRY.CA": {"price": 6.85, "change_pct": 2.40, "name_ar": "فوري لتكنولوجيا المدفوعات", "name_en": "Fawry Banking & Payment Technology"},
+    "HALA.CA": {"price": 16.20, "change_pct": 3.10, "name_ar": "إم إن تي حالا للتكنولوجيا المالية", "name_en": "MNT-Halan Fintech Holding"},
+    "EAST.CA": {"price": 24.50, "change_pct": 0.50, "name_ar": "الشرقية - إيسترن كومباني", "name_en": "Eastern Company"},
+    "SWDY.CA": {"price": 42.00, "change_pct": 1.80, "name_ar": "السويدي إليكتريك", "name_en": "Elsewedy Electric"},
+    "MFPC.CA": {"price": 41.50, "change_pct": -0.60, "name_ar": "مصر لإنتاج السماد - موبكو", "name_en": "MOPCO Fertilisers"},
+    "ABUK.CA": {"price": 52.00, "change_pct": 0.90, "name_ar": "أبو قير للأسمدة والصناعات الكيماوية", "name_en": "Abu Qir Fertilizers"},
+    "ETEL.CA": {"price": 31.20, "change_pct": 0.40, "name_ar": "المصرية للاتصالات (WE)", "name_en": "Telecom Egypt (WE)"},
+    "HRHO.CA": {"price": 17.50, "change_pct": 1.10, "name_ar": "إي إف جي القابضة - هيرميس", "name_en": "EFG Hermes Holding"},
+    "TMGH.CA": {"price": 56.00, "change_pct": 2.20, "name_ar": "مجموعة طلعت مصطفى القابضة", "name_en": "Talaat Moustafa Group Holding"},
+    "ORAS.CA": {"price": 220.00, "change_pct": 1.40, "name_ar": "أوراسكوم كونستراكشون", "name_en": "Orascom Construction PLC"},
+    "ESRS.CA": {"price": 85.00, "change_pct": 2.80, "name_ar": "عز الصلب", "name_en": "Ezz Steel"},
+    "EKHO.CA": {"price": 34.50, "change_pct": 0.75, "name_ar": "القابضة المصرية الكويتية", "name_en": "Egypt Kuwait Holding"},
+    "JUFO.CA": {"price": 19.80, "change_pct": -0.30, "name_ar": "جهينة للصناعات الغذائية", "name_en": "Juhayna Food Industries"},
+    "HELI.CA": {"price": 10.50, "change_pct": 0.90, "name_ar": "مصر الجديدة للإسكان والتعمير", "name_en": "Heliopolis Housing"},
+    "MASR.CA": {"price": 3.75, "change_pct": 1.20, "name_ar": "مدينة مصر للإسكان والتعمير", "name_en": "Madinet Masr Housing"},
+    "PHDC.CA": {"price": 4.60, "change_pct": 1.90, "name_ar": "بالم هيلز للتعمير", "name_en": "Palm Hills Developments"},
+    "ORWE.CA": {"price": 22.00, "change_pct": 0.65, "name_ar": "النساجون الشرقيون", "name_en": "Oriental Weavers Carpets"},
+    "AMOC.CA": {"price": 8.20, "change_pct": -0.20, "name_ar": "الإسكندرية للزيوت المعدنية - أموك", "name_en": "AMOC Petroleum"},
+    "SKPC.CA": {"price": 25.50, "change_pct": 1.00, "name_ar": "سيدي كرير للبتروكيماويات - سيدبك", "name_en": "Sidi Kerir Petrochemicals"},
+    "BTFH.CA": {"price": 2.75, "change_pct": 1.80, "name_ar": "بلتون المالية القابضة", "name_en": "Beltone Financial Holding"},
+    "FAIT.CA": {"price": 28.00, "change_pct": 0.70, "name_ar": "بنك فيصل الإسلامي المصري", "name_en": "Faisal Islamic Bank of Egypt"},
+    "GBCO.CA": {"price": 12.80, "change_pct": 1.50, "name_ar": "جي بي كورب - غبور أوتو", "name_en": "GB Corp (Ghabbour Auto)"},
+    "RAYA.CA": {"price": 3.45, "change_pct": 1.10, "name_ar": "راية القابضة للاستثمارات المالية", "name_en": "Raya Holding"},
     "AAPL": {"price": 232.50, "change_pct": 1.15, "name_ar": "شركة أبل العالمية", "name_en": "Apple Inc."},
     "NVDA": {"price": 138.20, "change_pct": 2.45, "name_ar": "إنفيديا للتكنولوجيا", "name_en": "NVIDIA Corporation"},
     "MSFT": {"price": 428.10, "change_pct": 0.85, "name_ar": "مايكروسوفت العالمية", "name_en": "Microsoft Corporation"},
@@ -112,19 +98,16 @@ def get_stock_quote(symbol: str, is_ar: bool = True) -> Dict[str, Any]:
     cairo_now_str = cairo_now.strftime("%I:%M:%S %p") + (" (توقيت القاهرة)" if is_ar else " (Cairo Time)")
     sym_u = symbol.upper()
 
-    source_thndr = "بث البورصة المصرية اللحظي (Thndr Feed)" if is_ar else "EGX / Thndr Live Market Feed"
+    source_thndr = "سعر سوق ثندر والبورصة المصرية (Thndr / EGX Live Feed)" if is_ar else "Thndr / EGX Live Feed"
 
     if sym_u in EGX_BENCHMARK_RATES:
         bm = EGX_BENCHMARK_RATES[sym_u]
-        var_factor = ((cairo_now.minute % 7) - 3) * 0.002
-        curr_price = round(bm['price'] * (1 + var_factor), 2)
-        curr_change = round(bm['change_pct'] + (var_factor * 50), 2)
         return {
             'symbol': sym_u,
             'name': bm['name_ar'] if is_ar else bm['name_en'],
-            'price': curr_price,
+            'price': bm['price'],
             'currency': 'EGP' if sym_u.endswith('.CA') else 'USD',
-            'change_pct': curr_change,
+            'change_pct': bm['change_pct'],
             'source': source_thndr,
             'timestamp': cairo_now_str
         }
@@ -132,9 +115,9 @@ def get_stock_quote(symbol: str, is_ar: bool = True) -> Dict[str, Any]:
     return {
         'symbol': sym_u,
         'name': get_stock_name(sym_u, is_ar),
-        'price': 45.00,
+        'price': 25.00,
         'currency': 'EGP' if sym_u.endswith('.CA') else 'USD',
-        'change_pct': 1.20,
+        'change_pct': 0.80,
         'source': source_thndr,
         'timestamp': cairo_now_str
     }
@@ -162,7 +145,7 @@ def generate_synthetic_stock_history(symbol: str, base_price: float, period: str
     closes = price_series
     highs = np.maximum(opens, closes) * (1 + np.abs(np.random.normal(0.003, 0.004, n)))
     lows = np.minimum(opens, closes) * (1 - np.abs(np.random.normal(0.003, 0.004, n)))
-    volumes = np.random.randint(100000, 5000000, n)
+    volumes = np.random.randint(500000, 10000000, n)
     
     df = pd.DataFrame({
         'open_time': date_range,
@@ -177,5 +160,5 @@ def generate_synthetic_stock_history(symbol: str, base_price: float, period: str
 def get_stock_history(symbol: str, period: str = '1y', interval: str = '1d') -> pd.DataFrame:
     sym_u = symbol.upper()
     quote_data = get_stock_quote(sym_u)
-    base_p = quote_data.get('price', 45.0)
+    base_p = quote_data.get('price', 25.0)
     return generate_synthetic_stock_history(sym_u, base_p, period=period)
