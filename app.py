@@ -236,6 +236,18 @@ elif nav.startswith("2."):
             col_b.metric("توقيت الجلب" if is_ar else "Timestamp", f"{quote['timestamp']}")
             col_c.metric("مصدر البيانات" if is_ar else "Data Source", f"{quote['source']}")
             
+            # Platform redirection links as requested by user
+            st.markdown("---")
+            st.markdown("### 🌐 الانتقال السريع للمنصات والمواقع الرسمية لمتابعة تفاصيل السهم:" if is_ar else "### 🌐 Quick Platform Redirection for Detailed Analysis:")
+            
+            clean_sym = selected_symbol.replace('.CA', '')
+            col_l1, col_l2, col_l3, col_l4 = st.columns(4)
+            
+            col_l1.markdown(f'<a href="https://www.egx.com.eg/ar/StockDetails.aspx?Stk={clean_sym}" target="_blank"><button style="width:100%; background-color:#121821; color:#D4AF37; border:2px solid #D4AF37; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">📈 موقع البورصة المصرية (EGX)</button></a>', unsafe_allow_html=True)
+            col_l2.markdown(f'<a href="https://thndr.app" target="_blank"><button style="width:100%; background-color:#121821; color:#F3BA2F; border:2px solid #F3BA2F; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">⚡ منصة ثندر (Thndr)</button></a>', unsafe_allow_html=True)
+            col_l3.markdown(f'<a href="https://www.investing.com/search/?q={clean_sym}" target="_blank"><button style="width:100%; background-color:#121821; color:#38BDF8; border:2px solid #38BDF8; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">📊 موقع Investing</button></a>', unsafe_allow_html=True)
+            col_l4.markdown(f'<a href="https://www.binance.com" target="_blank"><button style="width:100%; background-color:#121821; color:#FACC15; border:2px solid #FACC15; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">🪙 منصة Binance</button></a>', unsafe_allow_html=True)
+            
             st.markdown("---")
             st.subheader("الرسم البياني الشمعي التفاعلي" if is_ar else "Interactive Candlestick Chart")
             tf = st.selectbox("الإطار الزمني" if is_ar else "Timeframe", ["1mo", "3mo", "6mo", "1y", "2y", "5y"], index=3)
@@ -264,6 +276,15 @@ elif nav.startswith("2."):
                 c1.metric("السعر اللحظي" if is_ar else "Live Price", f"{q['price']:,.2f} {q['currency']}", f"{q['change_pct']:.2f}%")
                 c2.metric("توقيت الجلب" if is_ar else "Timestamp", f"{q['timestamp']}")
                 c3.metric("المصدر المباشر" if is_ar else "Direct Source", f"{q['source']}")
+                
+                st.markdown("---")
+                st.markdown("### 🌐 روابط الانتقال السريع للمنصات والمواقع الرسمية:" if is_ar else "### 🌐 Quick Platform Redirection Links:")
+                clean_sym_tab = sym.replace('.CA', '')
+                col_tl1, col_tl2, col_tl3, col_tl4 = st.columns(4)
+                col_tl1.markdown(f'<a href="https://www.egx.com.eg/ar/StockDetails.aspx?Stk={clean_sym_tab}" target="_blank"><button style="width:100%; background-color:#121821; color:#D4AF37; border:2px solid #D4AF37; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">📈 البورصة المصرية (EGX)</button></a>', unsafe_allow_html=True)
+                col_tl2.markdown(f'<a href="https://thndr.app" target="_blank"><button style="width:100%; background-color:#121821; color:#F3BA2F; border:2px solid #F3BA2F; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">⚡ منصة ثندر (Thndr)</button></a>', unsafe_allow_html=True)
+                col_tl3.markdown(f'<a href="https://www.investing.com/search/?q={clean_sym_tab}" target="_blank"><button style="width:100%; background-color:#121821; color:#38BDF8; border:2px solid #38BDF8; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">📊 موقع Investing</button></a>', unsafe_allow_html=True)
+                col_tl4.markdown(f'<a href="https://www.binance.com" target="_blank"><button style="width:100%; background-color:#121821; color:#FACC15; border:2px solid #FACC15; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">🪙 منصة Binance</button></a>', unsafe_allow_html=True)
                 
                 st.markdown("---")
                 df_hist = get_stock_history(sym, period="1y")
