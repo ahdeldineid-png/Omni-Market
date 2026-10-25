@@ -1,6 +1,6 @@
 import yfinance as yf
 import pandas as pd
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta, timezone
 from typing import Dict, Any, List
 
 # EGX 30 Index (The 30 most active and liquid companies in the Egyptian Exchange)
@@ -103,7 +103,7 @@ def get_stock_quote(symbol: str) -> Dict[str, Any]:
             else:
                 return {'error': f'Live price feed unavailable for ticker {symbol}', 'symbol': symbol}
 
-        now_str = datetime.now(timezone.utc).strftime("%H:%M:%S UTC")
+        now_str = (datetime.now(timezone.utc) + timedelta(hours=3)).strftime("%I:%M:%S %p Cairo")
         prev_close = ticker.fast_info.get('previous_close') or price
         change_pct = ((price - prev_close) / prev_close) * 100.0 if prev_close else 0.0
 

@@ -1,13 +1,13 @@
 import requests
 import yfinance as yf
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta, timezone
 from typing import Dict, Any
 from providers.forex import fetch_live_usd_egp_rate
 
 TROY_OUNCE_TO_GRAMS = 31.1034768
 
 def get_gold_reference_data(sagha_premium_pct: float = 0.0) -> Dict[str, Any]:
-    now_str = datetime.now(timezone.utc).strftime("%H:%M:%S UTC")
+    now_str = (datetime.now(timezone.utc) + timedelta(hours=3)).strftime("%I:%M:%S %p Cairo")
     egp_rate = fetch_live_usd_egp_rate()
     usd_per_oz = 2735.0
     gold_source = "Binance PAXG Spot Live"

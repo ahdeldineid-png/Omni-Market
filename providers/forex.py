@@ -1,6 +1,6 @@
 import requests
 import yfinance as yf
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta, timezone
 from typing import Dict, Any
 
 HEADERS = {
@@ -53,7 +53,7 @@ def fetch_live_usd_egp_rate() -> float:
 def calculate_universal_forex_conversion(amount: float, from_curr: str, to_curr: str) -> Dict[str, Any]:
     from_c = from_curr.upper()
     to_c = to_curr.upper()
-    now_str = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    now_str = (datetime.now(timezone.utc) + timedelta(hours=3)).strftime("%Y-%m-%d %I:%M:%S %p Cairo")
     
     rates_from_base = fetch_live_rates_all_currencies(from_c)
     

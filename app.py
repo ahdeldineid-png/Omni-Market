@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from storage.database import init_db, fetch_all, execute_query
 from providers.binance import get_binance_ticker_24hr, get_binance_klines
 from providers.forex import calculate_universal_forex_conversion, fetch_live_usd_egp_rate, fetch_live_rates_all_currencies
@@ -72,7 +72,7 @@ if st.sidebar.button(refresh_btn_label, key="refresh_live_btn", use_container_wi
     st.cache_data.clear()
     st.rerun()
 
-st.sidebar.caption(f"⏱️ Last Refreshed: {datetime.now().strftime('%H:%M:%S')}")
+st.sidebar.caption(f"⏱️ Last Refreshed: {(datetime.now(timezone.utc) + timedelta(hours=3)).strftime('%I:%M:%S %p (توقيت القاهرة)')}")
 st.sidebar.markdown("---")
 st.sidebar.title("⚡ Arbitrage Hub")
 st.sidebar.caption("Binance-Grade Financial Intelligence Terminal" if not is_ar else "محرك التحليل المالي وأسواق البورصة اللحظية")

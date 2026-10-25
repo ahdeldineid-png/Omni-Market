@@ -1,6 +1,6 @@
 import requests
 import pandas as pd
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta, timezone
 from typing import Dict, Any, List, Optional
 
 BINANCE_BASE_URL = "https://api.binance.com/api/v3"
@@ -11,7 +11,7 @@ def get_binance_ticker_24hr(symbol: Optional[str] = None) -> List[Dict[str, Any]
         resp = requests.get(url, timeout=5)
         resp.raise_for_status()
         data = resp.json()
-        now_str = datetime.now(timezone.utc).strftime("%H:%M:%S UTC")
+        now_str = (datetime.now(timezone.utc) + timedelta(hours=3)).strftime("%I:%M:%S %p Cairo")
         if isinstance(data, dict):
             data = [data]
         results = []
