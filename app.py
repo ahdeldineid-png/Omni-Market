@@ -525,77 +525,15 @@ elif nav.startswith("9."):
             col_icon, col_details = st.columns([0.05, 0.95])
             col_icon.markdown("🔹")
             
-            link_icon = "\U0001F517"
-            headline_html = f'<div style="margin-bottom: 4px;"><a href="{item[\'url\"]}" target="_blank" style="color: #F0B90B; font-size: 17px; font-weight: 700; text-decoration: none; font-family: sans-serif;">{item[\'title\"]} {link_icon}</a></div>'
+            link_url = item["url"]
+            link_title = item["title"]
+            headline_html = f'<div style="margin-bottom: 4px;"><a href="{link_url}" target="_blank" style="color: #F0B90B; font-size: 17px; font-weight: 700; text-decoration: none; font-family: sans-serif;">{link_title} 🔗</a></div>'
             col_details.markdown(headline_html, unsafe_allow_html=True)
             
             meta_text = f"**المصدر:** {item['source']} | **التصنيف:** {item['category']} | **التأثير المتوقع:** {item['impact']} | **المعنويات:** {item['sentiment']}"
             col_details.caption(meta_text)
             col_details.markdown(f"<span style='color: #E6E8EA; font-size: 14px;'>{item['summary']}</span>", unsafe_allow_html=True)
             st.markdown("<hr style='margin: 8px 0; border-color: #2B313A;'>", unsafe_allow_html=True)
-
-
-
-# MODULE 11: MACRO RATES & INFLATION (RATES SECTION)
-elif nav.startswith("11."):
-    title = "أسعار الفائدة ومعدلات التضخم المحلية والعالمية (Macro Rates)" if is_ar else "Global & Local Interest Rates & Inflation (Rates)"
-    sub = "متابعة دقيقة لأسعار الفائدة للبنك المركزي المصري والاحتياطي الفيدرالي الأمريكي ومعدلات التضخم بمصر والعالم" if is_ar else "Tracking Central Bank Interest Rates (CBE & Fed) and Inflation Metrics"
-    render_header(title, sub, is_ar=is_ar)
-    
-    st.subheader("مؤشرات السياسة النقدية وأسعار الفائدة الحالية" if is_ar else "Monetary Policy & Interest Rate Benchmarks")
-    
-    col_rate1, col_rate2, col_rate3, col_rate4 = st.columns(4)
-    col_rate1.metric("سعر الفائدة (البنك المركزي المصري)", "27.25%", "الإيداع لليلة واحدة / CBE Rate")
-    col_rate2.metric("سعر الفائدة (الفيدرالي الأمريكي)", "4.75%", "نطاق الفائدة المستهدف / US Fed Rate")
-    col_rate3.metric("معدل التضخم السنوي (مصر)", "25.40%", "الجهاز المركزي للتعبئة العامة والإحصاء")
-    col_rate4.metric("معدل التضخم السنوي (العالمي)", "2.90%", "متوسط الدول الكبرى / Global CPI")
-    
-    st.markdown("---")
-    st.subheader("جدول مقارنة المؤشرات الاقتصادية الكلية (Macroeconomic Benchmarks)" if is_ar else "Comprehensive Macroeconomic Comparison Table")
-    
-    macro_data = [
-        {
-            "المؤشر / Indicator": "سعر الفائدة الأساسي (Interest Rate)",
-            "المرجع المحلي (مصر / CBE)": "27.25% (إيداع) / 28.25% (إقراض)",
-            "المرجع العالمي (أمريكا / US Fed)": "4.75% - 5.00%",
-            "التأثير المباشر على الاستثمار": "تحديد تكلفة الفرصة البديلة وعوائد أدوات الدخل الثابت."
-        },
-        {
-            "المؤشر / Indicator": "معدل التضخم السنوي (Inflation Rate)",
-            "المرجع المحلي (مصر / CBE)": "25.40%",
-            "المرجع العالمي (أمريكا / Global)": "2.90%",
-            "التأثير المباشر على الاستثمار": "قياس تآكل القوة الشرائية وتحديد العائد الحقيقي للأسهم والذهب."
-        },
-        {
-            "المؤشر / Indicator": "احتياطي النقد الأجنبي (Foreign Reserves)",
-            "المرجع المحلي (مصر / CBE)": "46.7 مليار دولار",
-            "المرجع العالمي (أمريكا / US)": "تغطية عالمية مستقرة",
-            "التأثير المباشر على الاستثمار": "دعم استقرار سعر الصرف وتوفير العملة للاستيراد."
-        },
-        {
-            "المؤشر / Indicator": "سعر صرف الدولار الرسمي (FOREX USD/EGP)",
-            "المرجع المحلي (مصر / CBE)": f"{fetch_live_usd_egp_rate():.2f} EGP",
-            "المرجع العالمي (أمريكا / US)": "1.00 USD (المرجع)",
-            "التأثير المباشر على الاستثمار": "تقييم الأصول المقومة بالعملة الأجنبية وعوائد التصدير."
-        }
-    ]
-    
-    st.dataframe(pd.DataFrame(macro_data), use_container_width=True)
-    
-    st.markdown("---")
-    st.markdown("### التحليل الاستثماري لتأثير الفائدة والتضخم:" if is_ar else "### Investment Analysis of Rates & Inflation:")
-    if is_ar:
-        st.markdown("""
-        * **فائدة البنك المركزي المصري (27.25%):** تفرض تكلفة تمويل مرتفعة على الشركات، مما يجعل الاستثمار في الأسهم ذات التدفقات النقدية القوية والعائد التشغيلي العالي هو الخيار الأفضل لتجاوز تكلفة الأموال.
-        * **فائدة الفيدرالي الأمريكي (4.75%):** توجه تدفقات الأموال الساخنة نحو سندات الخزانة الأمريكية أو تشجع الأسواق الناشئة عند بدء دورة خفض الفائدة.
-        * **التضخم (25.40%):** يعزز جاذبية الذهب والأصول الحقيقية (العقارات والأسهم القيادية) كملاذات آمنة لحماية رأس المال من التآكل.
-        """)
-    else:
-        st.markdown("""
-        * **CBE Rate (27.25%):** High cost of capital favors companies with strong cash flows and low debt-to-equity ratios.
-        * **Fed Rate (4.75%):** Influences global liquidity flows into emerging markets.
-        * **Inflation (25.40%):** Drives demand for gold and defensive equities as inflation hedges.
-        """)
 
 
 # MODULE 10: DAILY REPORTS & NOTIFICATIONS
