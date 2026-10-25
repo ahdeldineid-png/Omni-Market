@@ -5,7 +5,7 @@ def create_candlestick_chart(df: pd.DataFrame, title: str = "Price Chart", is_ar
     fig = go.Figure()
     if df.empty:
         msg = "بيانات الأسعار غير متوفرة حالياً" if is_ar else "Price Data Unavailable"
-        fig.add_annotation(text=msg, showarrow=False, font=dict(size=16, color="#FFFFFF"))
+        fig.add_annotation(text=msg, showarrow=False, font=dict(size=16, color="#FFFFFF", family="Inter, Segoe UI, Roboto, sans-serif"))
         fig.update_layout(template="plotly_dark", height=450, paper_bgcolor="#0B0E11", plot_bgcolor="#181A20")
         return fig
     
@@ -31,13 +31,13 @@ def create_candlestick_chart(df: pd.DataFrame, title: str = "Price Chart", is_ar
         fig.add_trace(go.Scatter(x=df['open_time'], y=df['SMA_50'], mode='lines', name=sma50_lbl, line=dict(color='#00E5FF', width=1.8)))
 
     fig.update_layout(
-        title=dict(text=title, font=dict(size=18, color="#F0B90B", family="Inter")),
+        title=dict(text=title, font=dict(size=18, color="#F0B90B", family="Inter, Segoe UI, Roboto, sans-serif")),
         template="plotly_dark",
         height=520,
         xaxis_rangeslider_visible=False,
         paper_bgcolor="#0B0E11",
         plot_bgcolor="#1E2329",
-        font=dict(color="#FFFFFF", size=13),
+        font=dict(color="#FFFFFF", size=13, family="Inter, Segoe UI, Roboto, sans-serif"),
         margin=dict(l=20, r=20, t=50, b=20)
     )
     return fig
@@ -58,13 +58,13 @@ def create_forecast_chart(historical_years: list, rev_hist: list, net_hist: list
     fig.add_trace(go.Bar(x=years_all, y=net_all, name=net_label, marker_color="#0ECB81"))
     
     fig.update_layout(
-        title=dict(text=chart_title, font=dict(size=18, color="#F0B90B", family="Inter")),
+        title=dict(text=chart_title, font=dict(size=18, color="#F0B90B", family="Inter, Segoe UI, Roboto, sans-serif")),
         template="plotly_dark",
         barmode="group",
         height=450,
         paper_bgcolor="#0B0E11",
         plot_bgcolor="#1E2329",
-        font=dict(color="#FFFFFF", size=13),
+        font=dict(color="#FFFFFF", size=13, family="Inter, Segoe UI, Roboto, sans-serif"),
         margin=dict(l=20, r=20, t=50, b=20)
     )
     return fig
