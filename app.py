@@ -399,26 +399,117 @@ elif nav.startswith("8."):
     col_m2.metric("القيمة الحالية للمحفظة" if is_ar else "Current Portfolio Value", f"{total_current_val:,.2f}")
     col_m3.metric("صافي الأرباح والخسائر (PnL)" if is_ar else "Net PnL", f"{total_pnl:+,.2f}", f"{total_pnl_pct:+.2f}%")
 
-# MODULE 9: MARKET SENTIMENT & ECONOMIC NEWS (NEW FEATURE)
+# MODULE 9: MARKET SENTIMENT & ECONOMIC NEWS (PRO ENHANCED)
 elif nav.startswith("9."):
-    title = "تحليل معنويات السوق والأخبار الاقتصادية (Market Sentiment)" if is_ar else "Market Sentiment & Economic News Analyzer"
-    sub = "متابعة أحدث الأخبار وتحليل اتجاهات السوق (إيجابي / سلبي / محايد)" if is_ar else "Real-time economic news aggregator with automated sentiment analysis"
+    title = "متابعة وتحليل الأخبار الاقتصادية ومواقع التواصل (Global & Local Sentiment AI)" if is_ar else "Global & Local Economic News & Social Media Intelligence"
+    sub = "رصد وتتبع لحظي لكل الأخبار المحلية والعالمية ومواقع التواصل الاجتماعي وتأثيرها المحتمل على استثماراتك مع روابط مباشرة للبوستات" if is_ar else "Real-time tracking of local/global news and social media posts with direct hyperlinks and impact scoring"
     render_header(title, sub, is_ar=is_ar)
     
-    st.subheader("مؤشر معنويات السوق العام (Market Sentiment Index)" if is_ar else "Overall Market Sentiment Meter")
-    st.info("مؤشر الخوف والترقب (Greed & Fear Index): **68 - طمع معتدل (Bullish Optimism)**" if is_ar else "Market Sentiment: **68 - Moderate Bullish**")
+    st.subheader("مؤشر معنويات السوق العام وشبكات التواصل (Sentiment Meter)" if is_ar else "Overall Market & Social Sentiment Index")
+    col_s1, col_s2, col_s3 = st.columns(3)
+    col_s1.metric("مؤشر الخوف والطمع (Fear & Greed)", "68 / 100", "إيجابي متفائل / Bullish")
+    col_s2.metric("زخم وسائل التواصل (Social Buzz)", "+34.2%", "مرتفع / High Activity")
+    col_s3.metric("مستوى التأثير الاستثماري", "حذر إيجابي", "متابعة دقيقة")
     
     st.markdown("---")
-    st.subheader("أبرز الأخبار الاقتصادية واتجاهاتها" if is_ar else "Top Economic News & Sentiment Breakdown")
+    st.subheader("رصد الأخبار والبوستات الحية (Local & Global Social Media Feed)" if is_ar else "Live News & Social Media Feed (Filtered for Portfolio Impact)")
     
-    news_items = [
-        {"title": "البنك المركزي يثبت أسعار الفائدة في اجتماعه الدوري للاستقرار النقدي", "source": "رويترز / Reuters", "sentiment": "إيجابي / Bullish", "impact": "مرتفع / High"},
-        {"title": "نمو قياسي لإيرادات قطاع التكنولوجيا المالية والمدفوعات الإلكترونية بمصر", "source": "بلومبرغ الشرق", "sentiment": "إيجابي جداً / Very Bullish", "impact": "مرتفع / High"},
-        {"title": "ارتفاع احتياطي النقد الأجنبي لمستويات قياسية جديدة", "source": "الوكالة الرسمية", "sentiment": "إيجابي / Bullish", "impact": "متوسط / Medium"},
-        {"title": "تراجع طفيف في مؤشرات الأسهم العالمية بانتظار بيانات التضخم الأمريكية", "source": "فايننشال تايمز", "sentiment": "حذر / Neutral", "impact": "متوسط / Medium"}
+    col_f1, col_f2 = st.columns(2)
+    news_filter = col_f1.selectbox("تصنيف المصدر / Source Filter", ["الكل / All Sources", "المحلية (مصر والمنطقة) / Local", "العالمية ومحركات البحث / Global", "مواقع التواصل (X / Reddit / Telegram) / Social Media"])
+    impact_filter = col_f2.selectbox("مستوى التأثير / Impact Filter", ["الكل (حتى التأثير البسيط) / All Impacts", "تأثير مرتفع فقط / High", "تأثير متوسط وبسيط / Low & Medium"])
+    
+    all_live_news = [
+        {
+            "title": "البنك المركزي يثبت أسعار الفائدة في اجتماعه الدوري للاستقرار النقدي",
+            "source": "رويترز / Reuters (أخبار محلية)",
+            "category": "المحلية (مصر والمنطقة) / Local",
+            "impact": "مرتفع / High",
+            "sentiment": "إيجابي / Bullish",
+            "summary": "قرار التثبيت يدعم استقرار العوائد على أدوات الدخل الثابت ويشجع السيولة بالبورصة.",
+            "url": "https://www.reuters.com/world/africa/"
+        },
+        {
+            "title": "نقاشات واسعة على منصة X (تويتر) حول أداء أسهم قطاع التكنولوجيا المالية وفوري",
+            "source": "تغريدات المحللين / X Social Feed",
+            "category": "مواقع التواصل (X / Reddit / Telegram) / Social Media",
+            "impact": "متوسط / Medium",
+            "sentiment": "إيجابي جداً / Very Bullish",
+            "summary": "توقع مستثمرون نمواً استثنائياً لمدفوعات التجزئة الرقمية خلال الربع القادم.",
+            "url": "https://twitter.com/search?q=Fawry+EGX"
+        },
+        {
+            "title": "نمو قياسي لإيرادات قطاع التكنولوجيا والمدفوعات الإلكترونية بمصر",
+            "source": "بلومبرغ الشرق / Bloomberg Asharq",
+            "category": "المحلية (مصر والمنطقة) / Local",
+            "impact": "مرتفع / High",
+            "sentiment": "إيجابي / Bullish",
+            "summary": "التقارير المالية للشركات الناشئة والتحول الرقمي تعكس عوائد قوية للمساهمين.",
+            "url": "https://www.asharqbusiness.com/"
+        },
+        {
+            "title": "نقاش ساخن على ريديت (r/investing) حول تأثير الفائدة الأمريكية على الأسواق الناشئة والذهب",
+            "source": "منتدى Reddit الاستثماري",
+            "category": "مواقع التواصل (X / Reddit / Telegram) / Social Media",
+            "impact": "بسيط / Low",
+            "sentiment": "حذر / Neutral",
+            "summary": "تحليل لتدفقات الأموال الساخنة وتأثيرها الطفيف على تقييمات الأصول بالدولار والجنيه.",
+            "url": "https://www.reddit.com/r/investing/"
+        },
+        {
+            "title": "ارتفاع احتياطي النقد الأجنبي لمستويات قياسية جديدة",
+            "source": "البنك المركزي المصري / Official News",
+            "category": "المحلية (مصر والمنطقة) / Local",
+            "impact": "مرتفع / High",
+            "sentiment": "إيجابي / Bullish",
+            "summary": "تغطية الواردات لأكثر من 7 أشهر يعزز ثقة المستثمرين الأجانب والمحليين.",
+            "url": "https://www.cbe.org.eg/"
+        },
+        {
+            "title": "تراجع طفيف في مؤشرات الأسهم الأمريكية بانتظار بيانات التضخم وموقع تليجرام ينشط بتحليلات التحوط",
+            "source": "قنوات تليجرام الاقتصادية / Telegram Channel",
+            "category": "مواقع التواصل (X / Reddit / Telegram) / Social Media",
+            "impact": "بسيط / Low",
+            "sentiment": "حذر / Neutral",
+            "summary": "توصيات بتنويع المحفظة وتوزيع السيولة بين الأسهم الدفاعية والذهب.",
+            "url": "https://telegram.org/"
+        },
+        {
+            "title": "تقرير جولدمان ساكس حول آفاق الأسواق الناشئة لعام 2027 وتأثيرها غير المباشر",
+            "source": "Financial Times / Global Research",
+            "category": "العالمية ومحركات البحث / Global",
+            "impact": "متوسط / Medium",
+            "sentiment": "إيجابي / Bullish",
+            "summary": "إشارة لتوجيه استثمارات مؤسسية جديدة نحو أسواق الشرق الأوسط وشمال إفريقيا.",
+            "url": "https://www.ft.com/"
+        }
     ]
     
-    st.dataframe(pd.DataFrame(news_items), use_container_width=True)
+    filtered_news = all_live_news
+    if news_filter != "الكل / All Sources":
+        filtered_news = [n for n in filtered_news if news_filter.split(" / ")[0] in n['category']]
+    if impact_filter != "الكل (حتى التأثير البسيط) / All Impacts":
+        if "مرتفع" in impact_filter:
+            filtered_news = [n for n in filtered_news if "مرتفع" in n['impact']]
+        else:
+            filtered_news = [n for n in filtered_news if "متوسط" in n['impact'] or "بسيط" in n['impact']]
+
+    st.markdown(f"**عدد الأخبار والبوستات المرصودة:** {len(filtered_news)}" if is_ar else f"**Filtered News Items:** {len(filtered_news)}")
+    st.markdown("---")
+    
+    for idx, item in enumerate(filtered_news):
+        with st.container():
+            col_icon, col_details = st.columns([0.05, 0.95])
+            col_icon.markdown("🔹")
+            
+            link_icon = "\U0001F517"
+            headline_html = f'<div style="margin-bottom: 4px;"><a href="{item["url"]}" target="_blank" style="color: #F0B90B; font-size: 17px; font-weight: 700; text-decoration: none; font-family: 'Inter', sans-serif;">{item["title"]} {link_icon}</a></div>'
+            col_details.markdown(headline_html, unsafe_allow_html=True)
+            
+            meta_text = f"**المصدر:** {item['source']} | **التصنيف:** {item['category']} | **التأثير المتوقع:** {item['impact']} | **المعنويات:** {item['sentiment']}"
+            col_details.caption(meta_text)
+            col_details.markdown(f"<span style='color: #E6E8EA; font-size: 14px;'>{item['summary']}</span>", unsafe_allow_html=True)
+            st.markdown("<hr style='margin: 8px 0; border-color: #2B313A;'>", unsafe_allow_html=True)
+
 
 # MODULE 10: DAILY REPORTS & NOTIFICATIONS
 elif nav.startswith("10."):
