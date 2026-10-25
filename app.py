@@ -26,7 +26,7 @@ st.markdown("""
     html, body, .stApp { 
         background-color: #0B0E11; 
         color: #FFFFFF; 
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important; 
+            headline_html = f'<div style="margin-bottom: 4px;"><a href="{item[\'url\"]}" target="_blank" style="color: #F0B90B; font-size: 17px; font-weight: 700; text-decoration: none; font-family: sans-serif;">{item[\'title\"]} {link_icon}</a></div>'
     }
     .stSidebar { 
         background-color: #181A20 !important; 
@@ -526,7 +526,7 @@ elif nav.startswith("9."):
             col_icon.markdown("🔹")
             
             link_icon = "\U0001F517"
-            headline_html = f'<div style="margin-bottom: 4px;"><a href="{item["url"]}" target="_blank" style="color: #F0B90B; font-size: 17px; font-weight: 700; text-decoration: none; font-family: 'Inter', sans-serif;">{item["title"]} {link_icon}</a></div>'
+            headline_html = f'<div style="margin-bottom: 4px;"><a href="{item[\'url\"]}" target="_blank" style="color: #F0B90B; font-size: 17px; font-weight: 700; text-decoration: none; font-family: sans-serif;">{item[\'title\"]} {link_icon}</a></div>'
             col_details.markdown(headline_html, unsafe_allow_html=True)
             
             meta_text = f"**المصدر:** {item['source']} | **التصنيف:** {item['category']} | **التأثير المتوقع:** {item['impact']} | **المعنويات:** {item['sentiment']}"
