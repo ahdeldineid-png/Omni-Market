@@ -59,6 +59,29 @@ def init_db():
         detected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     ''')
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS notifications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        asset_type TEXT NOT NULL,
+        symbol TEXT NOT NULL,
+        display_name_ar TEXT NOT NULL,
+        display_name_en TEXT NOT NULL,
+        old_price REAL NOT NULL,
+        new_price REAL NOT NULL,
+        change_pct REAL NOT NULL,
+        currency TEXT NOT NULL,
+        formatted_time TEXT NOT NULL,
+        date_day TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    ''')
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS price_snapshots (
+        symbol TEXT PRIMARY KEY,
+        price REAL NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    ''')
     conn.commit()
     conn.close()
 

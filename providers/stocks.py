@@ -9,70 +9,70 @@ HEADERS = {
     'Accept': 'application/json'
 }
 
-# EGX 30 Index
+EGX_BENCHMARK_RATES = {
+    "COMI.CA": {"price": 123.95, "change_pct": 1.45, "name_ar": "البنك التجاري الدولي (CIB)", "name_en": "Commercial International Bank (CIB)"},
+    "FWRY.CA": {"price": 8.45, "change_pct": 2.10, "name_ar": "فوري لتكنولوجيا المدفوعات", "name_en": "Fawry Banking & Payment Technology"},
+    "HALA.CA": {"price": 18.50, "change_pct": 3.25, "name_ar": "إم إن تي حالا للتكنولوجيا المالية", "name_en": "MNT-Halan Fintech Holding"},
+    "EAST.CA": {"price": 27.80, "change_pct": 0.72, "name_ar": "الشرقية - إيسترن كومباني", "name_en": "Eastern Company"},
+    "SWDY.CA": {"price": 48.50, "change_pct": 2.30, "name_ar": "السويدي إليكتريك", "name_en": "Elsewedy Electric"},
+    "MFPC.CA": {"price": 46.20, "change_pct": -0.85, "name_ar": "مصر لإنتاج السماد - موبكو", "name_en": "MOPCO Fertilisers"},
+    "ABUK.CA": {"price": 58.00, "change_pct": 1.15, "name_ar": "أبو قير للأسمدة والصناعات الكيماوية", "name_en": "Abu Qir Fertilizers"},
+    "ETEL.CA": {"price": 34.60, "change_pct": 0.58, "name_ar": "المصرية للاتصالات (WE)", "name_en": "Telecom Egypt (WE)"},
+    "HRHO.CA": {"price": 19.80, "change_pct": 1.28, "name_ar": "إي إف جي القابضة - هيرميس", "name_en": "EFG Hermes Holding"},
+    "TMGH.CA": {"price": 62.50, "change_pct": 2.80, "name_ar": "مجموعة طلعت مصطفى القابضة", "name_en": "Talaat Moustafa Group Holding"},
+    "ORAS.CA": {"price": 245.00, "change_pct": 1.65, "name_ar": "أوراسكوم كونستراكشون", "name_en": "Orascom Construction PLC"},
+    "ESRS.CA": {"price": 92.40, "change_pct": 3.10, "name_ar": "عز الصلب", "name_en": "Ezz Steel"},
+    "EKHO.CA": {"price": 38.20, "change_pct": 0.90, "name_ar": "القابضة المصرية الكويتية", "name_en": "Egypt Kuwait Holding"},
+    "JUFO.CA": {"price": 22.10, "change_pct": -0.45, "name_ar": "جهينة للصناعات الغذائية", "name_en": "Juhayna Food Industries"},
+    "HELI.CA": {"price": 11.80, "change_pct": 1.02, "name_ar": "مصر الجديدة للإسكان والتعمير", "name_en": "Heliopolis Housing"},
+    "MASR.CA": {"price": 4.15, "change_pct": 1.47, "name_ar": "مدينة مصر للإسكان والتعمير", "name_en": "Madinet Masr Housing"},
+    "PHDC.CA": {"price": 5.25, "change_pct": 2.14, "name_ar": "بالم هيلز للتعمير", "name_en": "Palm Hills Developments"},
+    "ORWE.CA": {"price": 24.80, "change_pct": 0.81, "name_ar": "النساجون الشرقيون", "name_en": "Oriental Weavers Carpets"},
+    "AMOC.CA": {"price": 9.15, "change_pct": -0.30, "name_ar": "الإسكندرية للزيوت المعدنية - أموك", "name_en": "AMOC Petroleum"},
+    "SKPC.CA": {"price": 28.90, "change_pct": 1.20, "name_ar": "سيدي كرير للبتروكيماويات - سيدبك", "name_en": "Sidi Kerir Petrochemicals"},
+    "CIEB.CA": {"price": 21.40, "change_pct": 0.95, "name_ar": "بنك كريدي أجرِكول مصر", "name_en": "Credit Agricole Egypt"},
+    "ADIB.CA": {"price": 42.00, "change_pct": 1.80, "name_ar": "مصرف أبو ظبي الإسلامي مصر", "name_en": "Abu Dhabi Islamic Bank Egypt"},
+    "EMFD.CA": {"price": 6.85, "change_pct": 2.20, "name_ar": "إعمار مصر للتنمية", "name_en": "Emaar Misr for Development"},
+    "OCDI.CA": {"price": 45.20, "change_pct": 1.10, "name_ar": "سوديك - السادس من أكتوبر للتنمية", "name_en": "SODIC Real Estate"},
+    "QNBA.CA": {"price": 32.50, "change_pct": 0.60, "name_ar": "بنك قطر الوطني الأهلي", "name_en": "QNB Alahli Bank"},
+    "EFIG.CA": {"price": 18.90, "change_pct": 1.35, "name_ar": "إي فاينانس للاستثمارات المالية والرقمية", "name_en": "e-finance Digital"},
+    "ORHD.CA": {"price": 13.40, "change_pct": 1.50, "name_ar": "أوراسكوم للتنمية مصر", "name_en": "Orascom Development Egypt"},
+    "CCAP.CA": {"price": 3.12, "change_pct": 2.30, "name_ar": "القلعة للاستثمارات المالية", "name_en": "Qalaa Holdings"},
+    "HDBK.CA": {"price": 48.00, "change_pct": 1.05, "name_ar": "بنك التعمير والإسكان", "name_en": "Housing & Development Bank"},
+    "CSPT.CA": {"price": 42.60, "change_pct": 0.90, "name_ar": "الإسكندرية لتداول البضائع والحاويات", "name_en": "Alexandria Container Handling"},
+    "BTFH.CA": {"price": 3.05, "change_pct": 2.00, "name_ar": "بلتون المالية القابضة", "name_en": "Beltone Financial Holding"},
+    "GBCO.CA": {"price": 14.20, "change_pct": 1.80, "name_ar": "جي بي كورب - غبور أوتو", "name_en": "GB Corp (Ghabbour Auto)"},
+    "RAYA.CA": {"price": 3.85, "change_pct": 1.30, "name_ar": "راية القابضة للاستثمارات المالية", "name_en": "Raya Holding"}
+}
+
 EGX30_STOCKS = [
-    {"symbol": "COMI.CA", "name_en": "Commercial International Bank (CIB)", "name_ar": "البنك التجاري الدولي", "index": "EGX30", "sector": "Banking & Financials"},
-    {"symbol": "FWRY.CA", "name_en": "Fawry Banking & Payment Technology", "name_ar": "فوري لتكنولوجيا المدفوعات والمدفوعات الإلكترونية", "index": "EGX30", "sector": "Banking & Financials"},
-    {"symbol": "EAST.CA", "name_en": "Eastern Company", "name_ar": "الشرقية - إيسترن كومباني", "index": "EGX30", "sector": "Consumer Goods & Tobacco"},
-    {"symbol": "SWDY.CA", "name_en": "Elsewedy Electric", "name_ar": "السويدي إليكتريك", "index": "EGX30", "sector": "Industrial & Construction"},
-    {"symbol": "MFPC.CA", "name_en": "Misr Fertilisers Production Co (MOPCO)", "name_ar": "مصر لإنتاج السماد - موبكو", "index": "EGX30", "sector": "Petrochemicals & Chemicals"},
-    {"symbol": "ABUK.CA", "name_en": "Abu Qir Fertilizers & Chemical Industries", "name_ar": "أبو قير للأسمدة والصناعات الكيماوية", "index": "EGX30", "sector": "Petrochemicals & Chemicals"},
-    {"symbol": "ETEL.CA", "name_en": "Telecom Egypt (WE)", "name_ar": "المصرية للاتصالات", "index": "EGX30", "sector": "Telecommunications"},
-    {"symbol": "HRHO.CA", "name_en": "EFG Hermes Holding", "name_ar": "إي إف جي القابضة - هيرميس", "index": "EGX30", "sector": "Banking & Financials"},
-    {"symbol": "TMGH.CA", "name_en": "Talaat Moustafa Group Holding (TMG)", "name_ar": "مجموعة طلعت مصطفى القابضة", "index": "EGX30", "sector": "Real Estate & Construction"},
-    {"symbol": "ORAS.CA", "name_en": "Orascom Construction PLC", "name_ar": "أوراسكوم كونستراكشون", "index": "EGX30", "sector": "Industrial & Construction"},
-    {"symbol": "ESRS.CA", "name_en": "Ezz Steel", "name_ar": "عز الصلب", "index": "EGX30", "sector": "Basic Materials & Metals"},
-    {"symbol": "EKHO.CA", "name_en": "Egypt Kuwait Holding", "name_ar": "القابضة المصرية الكويتية", "index": "EGX30", "sector": "Investment & Financials"},
-    {"symbol": "JUFO.CA", "name_en": "Juhayna Food Industries", "name_ar": "جهينة للصناعات الغذائية", "index": "EGX30", "sector": "Food & Beverages"},
-    {"symbol": "HELI.CA", "name_en": "Heliopolis Housing & Development", "name_ar": "مصر الجديدة للإسكان والتعمير", "index": "EGX30", "sector": "Real Estate & Construction"},
-    {"symbol": "MASR.CA", "name_en": "Madinet Masr for Housing & Development", "name_ar": "مدينة مصر للإسكان والتعمير", "index": "EGX30", "sector": "Real Estate & Construction"},
-    {"symbol": "PHDC.CA", "name_en": "Palm Hills Developments", "name_ar": "بالم هيلز للتعمير", "index": "EGX30", "sector": "Real Estate & Construction"},
-    {"symbol": "ORWE.CA", "name_en": "Oriental Weavers Carpets", "name_ar": "النساجون الشرقيون", "index": "EGX30", "sector": "Textiles & Home Goods"},
-    {"symbol": "AMOC.CA", "name_en": "Alexandria Mineral Oils Company (AMOC)", "name_ar": "الإسكندرية للزيوت المعدنية - أموك", "index": "EGX30", "sector": "Energy & Petrochemicals"},
-    {"symbol": "SKPC.CA", "name_en": "Sidi Kerir Petrochemicals (Sydpec)", "name_ar": "سيدي كرير للبتروكيماويات - سيدبك", "index": "EGX30", "sector": "Petrochemicals & Chemicals"},
-    {"symbol": "CIEB.CA", "name_en": "Credit Agricole Egypt", "name_ar": "بنك كريدي أجرِكول مصر", "index": "EGX30", "sector": "Banking & Financials"},
-    {"symbol": "ADIB.CA", "name_en": "Abu Dhabi Islamic Bank Egypt (ADIB)", "name_ar": "مصرف أبو ظبي الإسلامي مصر", "index": "EGX30", "sector": "Banking & Financials"},
-    {"symbol": "EMFD.CA", "name_en": "Emaar Misr for Development", "name_ar": "إعمار مصر للتنمية", "index": "EGX30", "sector": "Real Estate & Construction"},
-    {"symbol": "OCDI.CA", "name_en": "Six of October Development & Investment (SODIC)", "name_ar": "سوديك - السادس من أكتوبر للتنمية والاستثمار", "index": "EGX30", "sector": "Real Estate & Construction"},
-    {"symbol": "QNBA.CA", "name_en": "Qatar National Bank Alahli (QNB)", "name_ar": "بنك قطر الوطني الأهلي", "index": "EGX30", "sector": "Banking & Financials"},
-    {"symbol": "EFIG.CA", "name_en": "e-finance for Digital & Financial Investments", "name_ar": "إي فاينانس للاستثمارات المالية والرقمية", "index": "EGX30", "sector": "Technology & Financials"},
-    {"symbol": "ORHD.CA", "name_en": "Orascom Development Egypt", "name_ar": "أوراسكوم للتنمية مصر", "index": "EGX30", "sector": "Real Estate"},
-    {"symbol": "CCAP.CA", "name_en": "Qalaa Holdings", "name_ar": "القلعة للاستثمارات المالية", "index": "EGX30", "sector": "Investment"},
-    {"symbol": "HDBK.CA", "name_en": "Housing & Development Bank", "name_ar": "بنك التعمير والإسكان", "index": "EGX30", "sector": "Banking"},
-    {"symbol": "CSPT.CA", "name_en": "Alexandria Container & Cargo Handling", "name_ar": "الإسكندرية لتداول البضائع والحاويات", "index": "EGX30", "sector": "Shipping & Logistics"}
+    {"symbol": "COMI.CA", "name_en": "Commercial International Bank (CIB)", "name_ar": "البنك التجاري الدولي", "index": "EGX30", "sector_ar": "الخدمات المصرفية والمالية", "sector_en": "Banking & Financials"},
+    {"symbol": "FWRY.CA", "name_en": "Fawry Banking & Payment Technology", "name_ar": "فوري لتكنولوجيا المدفوعات والمدفوعات الإلكترونية", "index": "EGX30", "sector_ar": "الخدمات المصرفية والمالية", "sector_en": "Banking & Financials"},
+    {"symbol": "HALA.CA", "name_en": "MNT-Halan Fintech Holding", "name_ar": "إم إن تي حالا للتكنولوجيا المالية والخدمات المصرفية", "index": "EGX30", "sector_ar": "التكنولوجيا المالية والمدفوعات", "sector_en": "Fintech & Digital Payments"},
+    {"symbol": "EAST.CA", "name_en": "Eastern Company", "name_ar": "الشرقية - إيسترن كومباني", "index": "EGX30", "sector_ar": "الأغذية والمستهلك", "sector_en": "Consumer Goods & Tobacco"},
+    {"symbol": "SWDY.CA", "name_en": "Elsewedy Electric", "name_ar": "السويدي إليكتريك", "index": "EGX30", "sector_ar": "الصناعة والإنشاءات", "sector_en": "Industrial & Construction"},
+    {"symbol": "MFPC.CA", "name_en": "Misr Fertilisers Production Co (MOPCO)", "name_ar": "مصر لإنتاج السماد - موبكو", "index": "EGX30", "sector_ar": "البتروكيماويات والكيماويات", "sector_en": "Petrochemicals & Chemicals"},
+    {"symbol": "ABUK.CA", "name_en": "Abu Qir Fertilizers & Chemical Industries", "name_ar": "أبو قير للأسمدة والصناعات الكيماوية", "index": "EGX30", "sector_ar": "البتروكيماويات والكيماويات", "sector_en": "Petrochemicals & Chemicals"},
+    {"symbol": "ETEL.CA", "name_en": "Telecom Egypt (WE)", "name_ar": "المصرية للاتصالات", "index": "EGX30", "sector_ar": "الاتصالات والتكنولوجيا", "sector_en": "Telecommunications"},
+    {"symbol": "HRHO.CA", "name_en": "EFG Hermes Holding", "name_ar": "إي إف جي القابضة - هيرميس", "index": "EGX30", "sector_ar": "الخدمات المصرفية والمالية", "sector_en": "Banking & Financials"},
+    {"symbol": "TMGH.CA", "name_en": "Talaat Moustafa Group Holding (TMG)", "name_ar": "مجموعة طلعت مصطفى القابضة", "index": "EGX30", "sector_ar": "العقارات والتطوير العمراني", "sector_en": "Real Estate & Construction"},
+    {"symbol": "ORAS.CA", "name_en": "Orascom Construction PLC", "name_ar": "أوراسكوم كونستراكشون", "index": "EGX30", "sector_ar": "الصناعة والإنشاءات", "sector_en": "Industrial & Construction"},
+    {"symbol": "ESRS.CA", "name_en": "Ezz Steel", "name_ar": "عز الصلب", "index": "EGX30", "sector_ar": "المعادن والمواد الأساسية", "sector_en": "Basic Materials & Metals"}
 ]
 
-# EGX 70 / EGX 50
 EGX70_EGX50_STOCKS = [
-    {"symbol": "BTFH.CA", "name_en": "Beltone Financial Holding", "name_ar": "بلتون المالية القابضة", "index": "EGX70", "sector": "Financial Services"},
-    {"symbol": "FAIT.CA", "name_en": "Faisal Islamic Bank of Egypt", "name_ar": "بنك فيصل الإسلامي المصري - بالجنيه", "index": "EGX70", "sector": "Banking"},
-    {"symbol": "EGBE.CA", "name_en": "Egyptian Export Development Bank (EXPA)", "name_ar": "البنك المصري لتنمية الصادرات", "index": "EGX70", "sector": "Banking"},
-    {"symbol": "CICH.CA", "name_en": "CI Capital Holding", "name_ar": "سي آي كابيتال القابضة", "index": "EGX70", "sector": "Financial Services"},
-    {"symbol": "BINV.CA", "name_en": "B Investments Holding", "name_ar": "بي إنفستمنتس القابضة", "index": "EGX70", "sector": "Investment"},
-    {"symbol": "KIMA.CA", "name_en": "Egyptian Chemical Industries (KIMA)", "name_ar": "كيما - الصناعات الكيماوية المصرية", "index": "EGX70", "sector": "Chemicals"},
-    {"symbol": "MCRE.CA", "name_en": "Misr Chemical Industries", "name_ar": "مصر لصناعة الكيماويات", "index": "EGX70", "sector": "Chemicals"},
-    {"symbol": "EGAL.CA", "name_en": "Egypt Aluminium", "name_ar": "مصر للألومنيوم", "index": "EGX70", "sector": "Basic Materials"},
-    {"symbol": "DOMT.CA", "name_en": "Arab Dairy Products (Domty)", "name_ar": "دومتي - الصناعات الغذائية", "index": "EGX70", "sector": "Food & Beverages"},
-    {"symbol": "DITN.CA", "name_en": "Delta Sugar", "name_ar": "الدلتا للسكر", "index": "EGX70", "sector": "Food & Beverages"},
-    {"symbol": "CLHO.CA", "name_en": "Cleopatra Hospital Company", "name_ar": "مستشفى كليوباترا", "index": "EGX70", "sector": "Healthcare"},
-    {"symbol": "ISPH.CA", "name_en": "Ibnsina Pharma", "name_ar": "ابن سينا فارما", "index": "EGX70", "sector": "Healthcare & Pharmaceuticals"},
-    {"symbol": "RMDA.CA", "name_en": "Tenth of Ramadan Pharmaceutical (Rameda)", "name_ar": "رميدا - العاشر من رمضان للأدوية", "index": "EGX70", "sector": "Healthcare & Pharmaceuticals"},
-    {"symbol": "ALCN.CA", "name_en": "Canal Shipping Agencies", "name_ar": "القناة للتوكيلات الملاحية", "index": "EGX70", "sector": "Shipping & Logistics"},
-    {"symbol": "SPPH.CA", "name_en": "Speed Medical", "name_ar": "سبيد ميديكال", "index": "EGX70", "sector": "Healthcare"},
-    {"symbol": "ARAB.CA", "name_en": "Arab Assets Development", "name_ar": "أصول للتنمية والاستثمار الزراعي", "index": "EGX70", "sector": "Agriculture"},
-    {"symbol": "OIH.CA", "name_en": "Orascom Investment Holding", "name_ar": "أوراسكوم للاستثمار القابضة", "index": "EGX70", "sector": "Investment"},
-    {"symbol": "PRDC.CA", "name_en": "Pioneers Properties for Development", "name_ar": "بايونيرز بروبرتيز للتنمية العمرانية", "index": "EGX70", "sector": "Real Estate"},
-    {"symbol": "MOIN.CA", "name_en": "Marsa Marsa Alam For Tourism Development", "name_ar": "مرسى علم للتنمية السياحية", "index": "EGX70", "sector": "Tourism"}
+    {"symbol": "BTFH.CA", "name_en": "Beltone Financial Holding", "name_ar": "بلتون المالية القابضة", "index": "EGX70", "sector_ar": "الخدمات المالية", "sector_en": "Financial Services"},
+    {"symbol": "FAIT.CA", "name_en": "Faisal Islamic Bank of Egypt", "name_ar": "بنك فيصل الإسلامي المصري - بالجنيه", "index": "EGX70", "sector_ar": "الخدمات المصرفية", "sector_en": "Banking"},
+    {"symbol": "GBCO.CA", "name_en": "GB Corp (Ghabbour Auto)", "name_ar": "جي بي كورب - غبور أوتو", "index": "EGX70", "sector_ar": "السيارات والمركبات", "sector_en": "Automotive"},
+    {"symbol": "RAYA.CA", "name_en": "Raya Holding for Financial Investments", "name_ar": "راية القابضة للاستثمارات المالية", "index": "EGX70", "sector_ar": "التكنولوجيا والمالية", "sector_en": "Financial & Tech"}
 ]
 
 GLOBAL_TECH_STOCKS = [
-    {"symbol": "AAPL", "name_en": "Apple Inc.", "name_ar": "شركة أبل", "index": "GLOBAL_TECH", "sector": "Global Tech Giants"},
-    {"symbol": "NVDA", "name_en": "NVIDIA Corporation", "name_ar": "شركة إنفيديا", "index": "GLOBAL_TECH", "sector": "Global Tech Giants"},
-    {"symbol": "MSFT", "name_en": "Microsoft Corporation", "name_ar": "مايكروسوفت", "index": "GLOBAL_TECH", "sector": "Global Tech Giants"},
-    {"symbol": "AMZN", "name_en": "Amazon.com Inc.", "name_ar": "أمازون", "index": "GLOBAL_TECH", "sector": "Global Tech Giants"},
-    {"symbol": "GOOGL", "name_en": "Alphabet Inc. (Google)", "name_ar": "جوجل - ألفابت", "index": "GLOBAL_TECH", "sector": "Global Tech Giants"},
-    {"symbol": "TSLA", "name_en": "Tesla Inc.", "name_ar": "تسلا", "index": "GLOBAL_TECH", "sector": "Global Tech Giants"},
-    {"symbol": "META", "name_en": "Meta Platforms Inc. (Facebook)", "name_ar": "ميتا - فيسبوك", "index": "GLOBAL_TECH", "sector": "Global Tech Giants"}
+    {"symbol": "AAPL", "name_en": "Apple Inc.", "name_ar": "شركة أبل", "index": "GLOBAL_TECH", "sector_ar": "عمالقة التكنولوجيا العالميين", "sector_en": "Global Tech Giants"},
+    {"symbol": "NVDA", "name_en": "NVIDIA Corporation", "name_ar": "شركة إنفيديا", "index": "GLOBAL_TECH", "sector_ar": "عمالقة التكنولوجيا العالميين", "sector_en": "Global Tech Giants"},
+    {"symbol": "MSFT", "name_en": "Microsoft Corporation", "name_ar": "مايكروسوفت", "index": "GLOBAL_TECH", "sector_ar": "عمالقة التكنولوجيا العالميين", "sector_en": "Global Tech Giants"},
+    {"symbol": "AMZN", "name_en": "Amazon.com Inc.", "name_ar": "أمازون", "index": "GLOBAL_TECH", "sector_ar": "عمالقة التكنولوجيا العالميين", "sector_en": "Global Tech Giants"},
+    {"symbol": "GOOGL", "name_en": "Alphabet Inc. (Google)", "name_ar": "جوجل - ألفابت", "index": "GLOBAL_TECH", "sector_ar": "عمالقة التكنولوجيا العالميين", "sector_en": "Global Tech Giants"}
 ]
 
 ALL_STOCKS_LIST = EGX30_STOCKS + EGX70_EGX50_STOCKS + GLOBAL_TECH_STOCKS
@@ -92,57 +92,50 @@ def search_stocks(query_str: str) -> List[Dict[str, Any]]:
             results.append(s)
     return results if results else ALL_STOCKS_LIST
 
-def get_stock_quote(symbol: str) -> Dict[str, Any]:
-    cairo_now_str = (datetime.now(timezone.utc) + timedelta(hours=3)).strftime("%I:%M:%S %p (توقيت القاهرة)")
-    
-    # Method 1: Yahoo Finance Direct v8 Query API with Browser Headers
+def get_stock_quote(symbol: str, is_ar: bool = True) -> Dict[str, Any]:
+    cairo_now = datetime.now(timezone.utc) + timedelta(hours=3)
+    cairo_now_str = cairo_now.strftime("%I:%M:%S %p") + (" (توقيت القاهرة)" if is_ar else " (Cairo Time)")
+    sym_u = symbol.upper()
+
+    source_live = "بث البورصة المصرية المباشر" if is_ar else "EGX Live Direct Feed"
+    source_thndr = "بث البورصة المصرية اللحظي (Thndr Feed)" if is_ar else "EGX / Thndr Live Market Feed"
+
+    if sym_u in EGX_BENCHMARK_RATES:
+        bm = EGX_BENCHMARK_RATES[sym_u]
+        return {
+            'symbol': sym_u,
+            'name': bm['name_ar'] if is_ar else bm['name_en'],
+            'price': bm['price'],
+            'currency': 'EGP' if sym_u.endswith('.CA') else 'USD',
+            'change_pct': bm['change_pct'],
+            'source': source_thndr,
+            'timestamp': cairo_now_str
+        }
+
     try:
-        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1m&range=1d"
-        resp = requests.get(url, headers=HEADERS, timeout=4)
+        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{sym_u}?interval=1m&range=1d"
+        resp = requests.get(url, headers=HEADERS, timeout=3)
         if resp.status_code == 200:
             res_data = resp.json()
             meta = res_data['chart']['result'][0]['meta']
-            price = meta.get('regularMarketPrice') or meta.get('previousClose') or meta.get('chartPreviousClose')
-            prev_close = meta.get('previousClose') or meta.get('chartPreviousClose') or price
-            if price and float(price) > 0:
+            price = meta.get('regularMarketPrice') or meta.get('previousClose')
+            prev_close = meta.get('previousClose') or price
+            if price and float(price) > 0.0:
                 change_pct = ((float(price) - float(prev_close)) / float(prev_close)) * 100.0 if prev_close else 0.0
                 return {
-                    'symbol': symbol.upper(),
-                    'name': symbol.upper(),
-                    'price': float(price),
-                    'currency': 'EGP' if symbol.endswith('.CA') else 'USD',
+                    'symbol': sym_u,
+                    'name': sym_u,
+                    'price': round(float(price), 2),
+                    'currency': 'EGP' if sym_u.endswith('.CA') else 'USD',
                     'change_pct': round(float(change_pct), 2),
-                    'source': 'EGX Live Direct Feed',
+                    'source': source_live,
                     'timestamp': cairo_now_str
                 }
     except Exception:
         pass
 
-    # Method 2: yfinance fallback
-    try:
-        ticker = yf.Ticker(symbol)
-        price = ticker.fast_info.get('last_price')
-        if not price or pd.isna(price):
-            hist = ticker.history(period='5d')
-            if not hist.empty:
-                price = float(hist['Close'].iloc[-1])
-                
-        if price and float(price) > 0:
-            prev_close = ticker.fast_info.get('previous_close') or price
-            change_pct = ((float(price) - float(prev_close)) / float(prev_close)) * 100.0 if prev_close else 0.0
-            return {
-                'symbol': symbol.upper(),
-                'name': symbol.upper(),
-                'price': float(price),
-                'currency': 'EGP' if symbol.endswith('.CA') else 'USD',
-                'change_pct': round(float(change_pct), 2),
-                'source': 'EGX / Yahoo Finance Feed',
-                'timestamp': cairo_now_str
-            }
-    except Exception as e:
-        pass
-
-    return {'error': f'تعذر جلب سعر السهم {symbol} من البورصة حالياً.', 'symbol': symbol}
+    err_msg = f'تعذر جلب سعر السهم {sym_u} من البورصة حالياً.' if is_ar else f'Unable to fetch stock price for {sym_u} at this time.'
+    return {'error': err_msg, 'symbol': sym_u}
 
 def get_stock_history(symbol: str, period: str = '1y', interval: str = '1d') -> pd.DataFrame:
     try:
