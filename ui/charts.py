@@ -1,16 +1,26 @@
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
+import numpy as np
 
 def create_candlestick_chart(df: pd.DataFrame, title: str = "Price Chart", is_ar: bool = True) -> go.Figure:
-    if df.empty or 'close' not in df.columns:
+    if df is None or df.empty or 'close' not in df.columns:
         fig = go.Figure()
         msg = "بيانات الأسعار غير متوفرة حالياً" if is_ar else "Price Data Unavailable"
         fig.add_annotation(text=msg, showarrow=False, font=dict(size=16, color="#FFFFFF", family="Inter, Segoe UI, Roboto, sans-serif"))
         fig.update_layout(template="plotly_dark", height=450, paper_bgcolor="#0B0E11", plot_bgcolor="#181A20")
         return fig
 
-    # Create subplots: Row 1 = Candlestick & Moving Averages (75% height), Row 2 = Volume (25% height)
+    # Clean missing values
+    df = df.dropna(subset=['open', 'high', 'low', 'close']).copy()
+    if df.empty:
+        fig = go.Figure()
+        msg = "بيانات الأسعار غير متوفرة حالياً" if is_ar else "Price Data Unavailable"
+        fig.add_annotation(text=msg, showarrow=False, font=dict(size=16, color="#FFFFFF", family="Inter, Segoe UI, Roboto, sans-serif"))
+        fig.update_layout(template="plotly_dark", height=450, paper_bgcolor="#0B0E11", plot_bgcolor="#181A20")
+        return fig
+
+    # Subplots: Row 1 = Candlestick & Moving Averages (75% height), Row 2 = Volume (25% height)
     fig = make_subplots(
         rows=2, cols=1,
         shared_xaxes=True,
@@ -50,8 +60,8 @@ def create_candlestick_chart(df: pd.DataFrame, title: str = "Price Chart", is_ar
         ), row=1, col=1)
 
     # 3. Volume Bar Trace
-    if 'volume' in df.columns:
-        colors = ['#0ECB81' if c >= o else '#F6465D' for c, o in zip(df['close'], df['open'])]
+    if 'volume' in df.columns and not df['volume'].isna().all():
+        colors = ['#0ECB81' if float(c) >= float(o) else '#F6465D' for c, o in zip(df['close'], df['open'])]
         vol_lbl = "حجم التداول / Volume" if is_ar else "Volume"
         fig.add_trace(go.Bar(
             x=df['open_time'], y=df['volume'],
