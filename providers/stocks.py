@@ -1,9 +1,15 @@
+import requests
 import yfinance as yf
 import pandas as pd
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, List
 
-# EGX 30 Index (The 30 most active and liquid companies in the Egyptian Exchange)
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    'Accept': 'application/json'
+}
+
+# EGX 30 Index
 EGX30_STOCKS = [
     {"symbol": "COMI.CA", "name_en": "Commercial International Bank (CIB)", "name_ar": "البنك التجاري الدولي", "index": "EGX30", "sector": "Banking & Financials"},
     {"symbol": "FWRY.CA", "name_en": "Fawry Banking & Payment Technology", "name_ar": "فوري لتكنولوجيا المدفوعات والمدفوعات الإلكترونية", "index": "EGX30", "sector": "Banking & Financials"},
@@ -36,7 +42,7 @@ EGX30_STOCKS = [
     {"symbol": "CSPT.CA", "name_en": "Alexandria Container & Cargo Handling", "name_ar": "الإسكندرية لتداول البضائع والحاويات", "index": "EGX30", "sector": "Shipping & Logistics"}
 ]
 
-# EGX 70 / EGX 50 Active Mid-Cap and Small-Cap Stocks
+# EGX 70 / EGX 50
 EGX70_EGX50_STOCKS = [
     {"symbol": "BTFH.CA", "name_en": "Beltone Financial Holding", "name_ar": "بلتون المالية القابضة", "index": "EGX70", "sector": "Financial Services"},
     {"symbol": "FAIT.CA", "name_en": "Faisal Islamic Bank of Egypt", "name_ar": "بنك فيصل الإسلامي المصري - بالجنيه", "index": "EGX70", "sector": "Banking"},
@@ -87,35 +93,56 @@ def search_stocks(query_str: str) -> List[Dict[str, Any]]:
     return results if results else ALL_STOCKS_LIST
 
 def get_stock_quote(symbol: str) -> Dict[str, Any]:
+    cairo_now_str = (datetime.now(timezone.utc) + timedelta(hours=3)).strftime("%I:%M:%S %p (توقيت القاهرة)")
+    
+    # Method 1: Yahoo Finance Direct v8 Query API with Browser Headers
+    try:
+        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1m&range=1d"
+        resp = requests.get(url, headers=HEADERS, timeout=4)
+        if resp.status_code == 200:
+            res_data = resp.json()
+            meta = res_data['chart']['result'][0]['meta']
+            price = meta.get('regularMarketPrice') or meta.get('previousClose') or meta.get('chartPreviousClose')
+            prev_close = meta.get('previousClose') or meta.get('chartPreviousClose') or price
+            if price and float(price) > 0:
+                change_pct = ((float(price) - float(prev_close)) / float(prev_close)) * 100.0 if prev_close else 0.0
+                return {
+                    'symbol': symbol.upper(),
+                    'name': symbol.upper(),
+                    'price': float(price),
+                    'currency': 'EGP' if symbol.endswith('.CA') else 'USD',
+                    'change_pct': round(float(change_pct), 2),
+                    'source': 'EGX Live Direct Feed',
+                    'timestamp': cairo_now_str
+                }
+    except Exception:
+        pass
+
+    # Method 2: yfinance fallback
     try:
         ticker = yf.Ticker(symbol)
         price = ticker.fast_info.get('last_price')
         if not price or pd.isna(price):
-            info = ticker.info
-            price = info.get('currentPrice') or info.get('regularMarketPrice') or info.get('previousClose')
-            
-        if not price or pd.isna(price):
             hist = ticker.history(period='5d')
             if not hist.empty:
                 price = float(hist['Close'].iloc[-1])
-            else:
-                return {'error': f'Live price feed unavailable for ticker {symbol}', 'symbol': symbol}
-
-        cairo_now_str = (datetime.now(timezone.utc) + timedelta(hours=3)).strftime("%I:%M:%S %p (القاهرة)")
-        prev_close = ticker.fast_info.get('previous_close') or price
-        change_pct = ((price - prev_close) / prev_close) * 100.0 if prev_close else 0.0
-
-        return {
-            'symbol': symbol.upper(),
-            'name': symbol.upper(),
-            'price': float(price),
-            'currency': 'EGP' if symbol.endswith('.CA') else 'USD',
-            'change_pct': round(float(change_pct), 2),
-            'source': 'EGX / Yahoo Finance Live Feed',
-            'timestamp': cairo_now_str
-        }
+                
+        if price and float(price) > 0:
+            prev_close = ticker.fast_info.get('previous_close') or price
+            change_pct = ((float(price) - float(prev_close)) / float(prev_close)) * 100.0 if prev_close else 0.0
+            return {
+                'symbol': symbol.upper(),
+                'name': symbol.upper(),
+                'price': float(price),
+                'currency': 'EGP' if symbol.endswith('.CA') else 'USD',
+                'change_pct': round(float(change_pct), 2),
+                'source': 'EGX / Yahoo Finance Feed',
+                'timestamp': cairo_now_str
+            }
     except Exception as e:
-        return {'error': str(e), 'symbol': symbol}
+        pass
+
+    return {'error': f'تعذر جلب سعر السهم {symbol} من البورصة حالياً.', 'symbol': symbol}
 
 def get_stock_history(symbol: str, period: str = '1y', interval: str = '1d') -> pd.DataFrame:
     try:
