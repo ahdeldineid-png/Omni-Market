@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime, timezone, timedelta
-from storage.database import init_db, fetch_all, execute_query
+from storage.database import init_db
 from providers.binance import get_binance_ticker_24hr, get_binance_klines
 from providers.forex import calculate_universal_forex_conversion, fetch_live_usd_egp_rate, fetch_live_rates_all_currencies
 from providers.stocks import get_stock_quote, get_stock_history, search_stocks, EGX30_STOCKS, EGX70_EGX50_STOCKS, GLOBAL_TECH_STOCKS, ALL_STOCKS_LIST
@@ -12,70 +12,84 @@ from services.analytics import calculate_technical_indicators
 from ui.components import render_header
 from ui.charts import create_candlestick_chart, create_forecast_chart
 
-st.set_page_config(page_title="Arbitrage Hub - Binance Dark Terminal", page_icon="⚡", layout="wide")
+st.set_page_config(page_title="Arbitrage Hub - High-Contrast Intelligence Terminal", page_icon="⚡", layout="wide")
 
 st.markdown("""
 <style>
-    .stApp { background-color: #0B0E11; color: #EAECEF; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    .stApp { background-color: #0B0E11; color: #FFFFFF; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
     .stSidebar { background-color: #181A20 !important; border-right: 1px solid #2B313A; }
-    h1, h2, h3 { color: #F0B90B !important; font-weight: 700; }
+    h1, h2, h3 { color: #F0B90B !important; font-weight: 800; letter-spacing: -0.3px; }
+    p, span, label { color: #EAECEF !important; font-size: 15px; font-weight: 500; }
     div[data-testid="stMetricValue"] { 
         color: #F0B90B !important; 
         font-family: 'JetBrains Mono', monospace; 
-        font-weight: 700; 
+        font-weight: 800; 
+        font-size: 28px !important;
     }
     div[data-testid="stMetricLabel"] {
-        color: #848E9C !important;
-        font-weight: 600;
+        color: #B7BDC6 !important;
+        font-weight: 700;
         text-transform: uppercase;
-        font-size: 11px;
+        font-size: 13px !important;
+        letter-spacing: 0.5px;
     }
-    @keyframes bounceFloat {
-        0% { transform: translateY(0px) scale(1); box-shadow: 0 4px 12px rgba(240, 185, 11, 0.2); }
-        50% { transform: translateY(-5px) scale(1.02); box-shadow: 0 10px 20px rgba(240, 185, 11, 0.4); }
-        100% { transform: translateY(0px) scale(1); box-shadow: 0 4px 12px rgba(240, 185, 11, 0.2); }
+    @keyframes pulseGlow {
+        0% { box-shadow: 0 0 10px rgba(240, 185, 11, 0.3); }
+        50% { box-shadow: 0 0 20px rgba(240, 185, 11, 0.7); }
+        100% { box-shadow: 0 0 10px rgba(240, 185, 11, 0.3); }
     }
     div.stButton > button[key="refresh_live_btn"] {
         background: linear-gradient(135deg, #F0B90B 0%, #F8D33A 100%) !important;
         color: #0B0E11 !important;
-        font-weight: 800 !important;
-        font-size: 14px !important;
+        font-weight: 900 !important;
+        font-size: 15px !important;
         border: none !important;
-        border-radius: 4px !important;
-        padding: 10px 18px !important;
-        animation: bounceFloat 2.8s ease-in-out infinite !important;
+        border-radius: 6px !important;
+        padding: 12px 20px !important;
+        animation: pulseGlow 2.5s infinite !important;
         cursor: pointer !important;
-        transition: all 0.2s ease !important;
         width: 100% !important;
     }
     input, select, div[data-baseweb="select"] {
         background-color: #2B313A !important;
-        color: #EAECEF !important;
-        border-radius: 4px !important;
+        color: #FFFFFF !important;
+        border-radius: 6px !important;
         border: 1px solid #474D57 !important;
+        font-size: 15px !important;
     }
-    .stDataFrame { border: 1px solid #2B313A; border-radius: 4px; }
-    button[data-baseweb="tab"] { color: #848E9C !important; font-weight: 600 !important; }
+    .stDataFrame { border: 1px solid #363C4E; border-radius: 6px; }
+    button[data-baseweb="tab"] { color: #B7BDC6 !important; font-weight: 700 !important; font-size: 15px !important; }
     button[aria-selected="true"] { color: #F0B90B !important; border-bottom-color: #F0B90B !important; }
 </style>
 """, unsafe_allow_html=True)
 
 init_db()
 
-st.sidebar.title("🌐 Language")
-lang_choice = st.sidebar.selectbox("Select Display Language", ["English", "العربية"], index=0)
+st.sidebar.title("🌐 Language / اللغة")
+lang_choice = st.sidebar.selectbox("Select Display Language", ["العربية", "English"], index=0)
 is_ar = (lang_choice == "العربية")
 
 st.sidebar.markdown("---")
-refresh_btn_label = "💵↗️ Refresh Live Rates" if not is_ar else "💵↗️ تحديث الأسعار والأسواق أونلاين"
+refresh_btn_label = "💵↗️ تحديث الأسعار والأسواق لحظياً" if is_ar else "💵↗️ Refresh Live Market Rates"
 if st.sidebar.button(refresh_btn_label, key="refresh_live_btn", use_container_width=True):
     st.cache_data.clear()
     st.rerun()
 
-st.sidebar.caption(f"⏱️ Last Refreshed: {(datetime.now(timezone.utc) + timedelta(hours=3)).strftime('%I:%M:%S %p (توقيت القاهرة)')}")
+cairo_time_str = (datetime.now(timezone.utc) + timedelta(hours=3)).strftime("%I:%M:%S %p (توقيت القاهرة)")
+st.sidebar.caption(f"⏱️ آخر تحديث: {cairo_time_str}" if is_ar else f"⏱️ Last Refreshed: {cairo_time_str}")
 st.sidebar.markdown("---")
 st.sidebar.title("⚡ Arbitrage Hub")
-st.sidebar.caption("Binance-Grade Financial Intelligence Terminal" if not is_ar else "محرك التحليل المالي وأسواق البورصة اللحظية")
+st.sidebar.caption("محرك التحليل المالي وأسواق البورصة والعملات المباشر" if is_ar else "Binance-Grade Financial Intelligence Terminal")
+
+nav_options_ar = [
+    "1. 📊 شاشة المراقبة اللحظية (Live Overview)",
+    "2. 🏛️ أسهم ومؤشرات البورصة المصرية (EGX)",
+    "3. 💱 حاسبة العملات العالمية (Universal Forex)",
+    "4. 🪙 الكريبتو - بث مباشر باينانس (Crypto)",
+    "5. 🏆 الذهب وحاسبة الصاغة (Gold & Sagha)",
+    "6. 🚀 مكتشف الفرص التبادلية (Arbitrage Scanner)",
+    "7. 📈 القوائم المالية وتحليل PDF/Excel (Financial Statements)"
+]
 
 nav_options_en = [
     "1. 📊 Live Market Overview",
@@ -84,17 +98,7 @@ nav_options_en = [
     "4. 🪙 Live Crypto Trading Feed",
     "5. 🏆 Gold Pricing & Sagha Premium Calculator",
     "6. 🚀 Real-Time Arbitrage Scanner",
-    "7. 📈 Financial Statements & Precision Ratios"
-]
-
-nav_options_ar = [
-    "1. 📊 نظرة عامة أونلاين (Live Overview)",
-    "2. 🏛️ مؤشرات وأسهم البورصة المصرية (EGX Indices)",
-    "3. 💱 الفوركس العالمي لجميع العملات (Universal Forex)",
-    "4. 🪙 الكريبتو البث المباشر (Crypto)",
-    "5. 🏆 الذهب العالمي وحاسبة سوق الصاغة (Gold & Sagha)",
-    "6. 🚀 مكتشف الفرص اللحظي (Arbitrage Scanner)",
-    "7. 📈 القوائم المالية والتحليل المالي (Financial Statements)"
+    "7. 📈 Financial Statements & PDF/Excel Intelligence"
 ]
 
 nav = st.sidebar.radio("Navigation", nav_options_ar if is_ar else nav_options_en)
@@ -104,69 +108,80 @@ def render_live_overview_cards():
     c1, c2, c3, c4 = st.columns(4)
     btc = get_binance_ticker_24hr("BTCUSDT")
     if btc:
-        lbl = "Bitcoin BTC/USDT (Live)" if not is_ar else "بيتكوين BTC / USDT (مباشر)"
+        lbl = "بيتكوين BTC / USDT (مباشر)" if is_ar else "Bitcoin BTC/USDT (Live)"
         c1.metric(lbl, f"${btc[0]['price']:,.2f}", f"{btc[0]['change_24h_pct']:.2f}%")
-        
+        with c1.popover("🔍 مرجع الأرقام / Proof"):
+            st.write("**المصدر الأصلي:** Binance Spot Live API v3")
+            st.write(f"**الرمز الرسمي:** `{btc[0]['symbol']}`")
+            st.write(f"**أعلى سعر (24h):** ${btc[0]['high_24h']:,.2f}")
+            st.write(f"**أدنى سعر (24h):** ${btc[0]['low_24h']:,.2f}")
+            st.write(f"**توقيت الجلب:** {btc[0]['timestamp']}")
+
     gold = get_gold_reference_data()
-    lbl_gold = "Global Gold (USD/oz)" if not is_ar else "الذهب عالمياً (USD/oz)"
-    lbl_usd = "Live USD/EGP Rate" if not is_ar else "سعر دولار الصرف الحي"
+    lbl_gold = "الذهب عالمياً (USD/oz)" if is_ar else "Global Gold (USD/oz)"
     c2.metric(lbl_gold, f"${gold['usd_per_troy_oz']:,.2f}")
+    with c2.popover("🔍 مرجع الأرقام / Proof"):
+        st.write(f"**المصدر الأصلي:** {gold['gold_source']}")
+        st.write(f"**سعر أونصة الذهب:** ${gold['usd_per_troy_oz']:,.2f}")
+        st.write(f"**سعر جرام 24 بالجنيه:** {gold['indicative_egp_per_gram_24k']:,.2f} EGP")
+        st.write(f"**توقيت الجلب:** {gold['timestamp']}")
+
+    lbl_usd = "سعر الدولار الحي (EGP)" if is_ar else "Live USD/EGP Rate"
     c3.metric(lbl_usd, f"{gold['usd_egp_rate']:.2f} EGP")
-    
+    with c3.popover("🔍 مرجع الأرقام / Proof"):
+        st.write("**المصدر الأصلي:** EGX Interbank / ExchangeRate Live Feed")
+        st.write(f"**سعر صرف 1 USD:** {gold['usd_egp_rate']} EGP")
+        st.write(f"**توقيت الجلب:** {gold['timestamp']}")
+
     cib = get_stock_quote("COMI.CA")
-    lbl_cib = "CIB Bank (EGX: COMI)" if not is_ar else "البنك التجاري الدولي (CIB)"
+    lbl_cib = "البنك التجاري الدولي (CIB)" if is_ar else "CIB Bank (EGX: COMI)"
     if 'price' in cib:
         c4.metric(lbl_cib, f"{cib['price']:.2f} EGP", f"{cib['change_pct']:.2f}%")
-    else:
-        c4.metric(lbl_cib, "N/A")
+        with c4.popover("🔍 مرجع الأرقام / Proof"):
+            st.write(f"**المصدر الأصلي:** {cib['source']}")
+            st.write(f"**كود الشركة بالبورصة:** {cib['symbol']}")
+            st.write(f"**السعر الحالي:** {cib['price']} {cib['currency']}")
+            st.write(f"**توقيت الجلب:** {cib['timestamp']}")
 
 @st.fragment(run_every="4s")
 def render_live_crypto_table():
-    st.subheader("🔥 Top Crypto Market Movers (Binance Feed)" if not is_ar else "🔥 تحركات الكريبتو والأسواق العالمية (بث مباشر)")
+    st.subheader("🔥 تحركات الكريبتو والأسواق العالمية (بث مباشر)" if is_ar else "🔥 Top Crypto Market Movers (Binance Feed)")
     tickers = get_binance_ticker_24hr()
     if tickers:
         df_t = pd.DataFrame(tickers).sort_values('change_24h_pct', ascending=False).head(10)
-        st.dataframe(df_t[['symbol', 'price', 'change_24h_pct', 'high_24h', 'low_24h', 'volume_24h']], use_container_width=True)
-
-@st.fragment(run_every="3s")
-def render_live_crypto_chart(sym):
-    df = get_binance_klines(sym)
-    df = calculate_technical_indicators(df)
-    st.plotly_chart(create_candlestick_chart(df, f"Live Chart - {sym}"), use_container_width=True)
+        st.dataframe(df_t[['symbol', 'price', 'change_24h_pct', 'high_24h', 'low_24h', 'volume_24h', 'source', 'timestamp']], use_container_width=True)
 
 @st.fragment(run_every="5s")
 def render_live_arbitrage_scanner():
-    st.caption("🔄 Auto-refreshing every 5 seconds..." if not is_ar else "🔄 يتم التحديث تلقائياً كل 5 ثوانٍ لجلب أحدث الفرص...")
+    st.caption("🔄 يتم التحديث تلقائياً كل 5 ثوانٍ لجلب أحدث الفرص..." if is_ar else "🔄 Auto-refreshing every 5 seconds...")
     res = scan_arbitrage_opportunities()
     if res:
         st.dataframe(pd.DataFrame(res), use_container_width=True)
     else:
-        st.warning("No net arbitrage opportunities detected after fees." if not is_ar else "لم يتم العثور على فرص تبادلية محققة للربح بعد خصم العمولات حالياً.")
-
+        st.warning("لم يتم العثور على فرص تبادلية محققة للربح بعد خصم العمولات حالياً." if is_ar else "No net arbitrage opportunities detected after fees.")
 
 # MODULE 1: OVERVIEW
 if nav.startswith("1."):
-    title = "Market Overview - 24/7 Live Monitor" if not is_ar else "Market Overview - شاشة المراقبة اللحظية 24/7"
-    sub = "Live market feeds streaming from global exchanges" if not is_ar else "بث مباشر لأسعار الصرف والذهب والأسهم لحظة بلحظة"
+    title = "شاشة المراقبة اللحظية 24/7" if is_ar else "Market Overview - 24/7 Live Monitor"
+    sub = "بث مباشر لأسعار البورصة المصرية وتداولات باينانس والعملات لحظة بلحظة" if is_ar else "Live market feeds streaming from global exchanges and EGX"
     render_header(title, sub)
     render_live_overview_cards()
     st.markdown("---")
     render_live_crypto_table()
 
-# MODULE 2: EGX MARKET INDICES & STOCKS (EGX30, EGX70, GLOBAL TECH + UNIFIED SEARCH)
+# MODULE 2: EGX STOCKS
 elif nav.startswith("2."):
-    title = "🏛️ EGX Market Indices & Stocks Terminal" if not is_ar else "🏛️ مؤشرات وأسهم البورصة المصرية والعالمية"
-    sub = "Explore EGX30, EGX70/50, and Global Tech stocks with categorized tabs and universal search" if not is_ar else "تصفح مؤشرات EGX30 و EGX70 والأسهم العالمية مع تبويب دقيق وبحث شامل بالاسم أو الكود"
+    title = "🏛️ مؤشرات وأسهم البورصة المصرية والعالمية" if is_ar else "🏛️ EGX Market Indices & Stocks Terminal"
+    sub = "تصفح مؤشرات EGX30 و EGX70 والأسهم العالمية مع المراجع المباشرة للأسعار" if is_ar else "Explore EGX30, EGX70/50, and Global Tech stocks with categorization and proof"
     render_header(title, sub)
     
-    # Universal Search Bar
-    search_query = st.text_input("🔍 Universal Stock Search / ابحث عن أي شركة بالاسم أو الكود", value="", placeholder="e.g. فوري / CIB / طلعت مصطفى / Apple / COMI.CA").strip()
+    search_query = st.text_input("🔍 ابحث عن أي شركة بالاسم أو الكود (مثال: فوري / CIB / طلعت مصطفى / COMI.CA)", value="").strip()
     
     if search_query:
         matched = search_stocks(search_query)
-        st.subheader(f"🔎 Search Results for: '{search_query}'" if not is_ar else f"🔎 نتائج البحث عن: '{search_query}'")
-        search_options = [f"{s['name_en']} | {s['name_ar']} ({s['symbol']})" for s in matched]
-        selected_option = st.selectbox("Select Company / اختر الشركة", search_options, index=0)
+        st.subheader(f"🔎 نتائج البحث عن: '{search_query}'" if is_ar else f"🔎 Search Results for: '{search_query}'")
+        search_options = [f"{s['name_ar']} | {s['name_en']} ({s['symbol']})" for s in matched]
+        selected_option = st.selectbox("اختر الشركة", search_options, index=0)
         selected_symbol = selected_option.split("(")[-1].replace(")", "").strip()
         
         quote = get_stock_quote(selected_symbol)
@@ -174,28 +189,33 @@ elif nav.startswith("2."):
             st.error(quote['error'])
         else:
             col_a, col_b, col_c = st.columns(3)
-            col_a.metric("Current Price", f"{quote['price']:,.2f} {quote['currency']}", f"{quote['change_pct']:.2f}%")
-            col_b.metric("Timestamp", f"{quote['timestamp']}")
-            col_c.metric("Data Feed Source", f"{quote['source']}")
+            col_a.metric("السعر اللحظي", f"{quote['price']:,.2f} {quote['currency']}", f"{quote['change_pct']:.2f}%")
+            col_b.metric("توقيت الجلب", f"{quote['timestamp']}")
+            col_c.metric("مصدر البيانات", f"{quote['source']}")
+            
+            with col_a.popover("🔍 مرجع السعر والدعم"):
+                st.write(f"**اسم الشركة:** {selected_symbol}")
+                st.write(f"**سعر الإغلاق/التداول:** {quote['price']} {quote['currency']}")
+                st.write(f"**مصدر التداول الرسمي:** {quote['source']}")
+                st.write(f"**التوقيت المحلّي:** {quote['timestamp']}")
             
             st.markdown("---")
-            st.subheader("📊 Interactive Candlestick Chart")
-            tf = st.selectbox("Timeframe", ["1mo", "3mo", "6mo", "1y", "2y", "5y"], index=3)
+            st.subheader("📊 الرسم البياني الشمعي التفاعلي")
+            tf = st.selectbox("الإطار الزمني", ["1mo", "3mo", "6mo", "1y", "2y", "5y"], index=3)
             df_stock_hist = get_stock_history(selected_symbol, period=tf)
             if not df_stock_hist.empty:
                 df_stock_hist = calculate_technical_indicators(df_stock_hist)
-                fig_stock = create_candlestick_chart(df_stock_hist, f"Candlestick & SMA (20/50) - {selected_symbol}")
+                fig_stock = create_candlestick_chart(df_stock_hist, f"Candlestick Chart - {selected_symbol}")
                 st.plotly_chart(fig_stock, use_container_width=True)
             else:
-                st.warning("Historical chart unavailable for this symbol.")
+                st.warning("الرسم البياني غير متوفر لهذا السهم حالياً.")
     else:
-        # Categorized Indices Tabs
-        tab_30, tab_70, tab_global = st.tabs(["📈 EGX 30 Index (الأسهم القيادية)", "📊 EGX 70 / 50 Index (الأسهم المتوسطة)", "🌍 Global Tech Giants"])
+        tab_30, tab_70, tab_global = st.tabs(["📈 EGX 30 (الأسهم القيادية)", "📊 EGX 70 / 50 (الأسهم المتوسطة)", "🌍 Global Tech (عمالقة التكنولوجيا)"])
         
         def render_index_section(stocks_list, index_name):
-            st.markdown(f"### 📋 {index_name} Components & Live Quotes")
-            options = [f"{s['name_en']} | {s['name_ar']} ({s['symbol']})" for s in stocks_list]
-            sel = st.selectbox(f"Select company in {index_name} / اختر شركة", options, key=f"sel_{index_name}")
+            st.markdown(f"### 📋 مكونات مؤشر {index_name}")
+            options = [f"{s['name_ar']} | {s['name_en']} ({s['symbol']})" for s in stocks_list]
+            sel = st.selectbox(f"اختر شركة من {index_name}", options, key=f"sel_{index_name}")
             sym = sel.split("(")[-1].replace(")", "").strip()
             
             q = get_stock_quote(sym)
@@ -203,9 +223,15 @@ elif nav.startswith("2."):
                 st.error(q['error'])
             else:
                 c1, c2, c3 = st.columns(3)
-                c1.metric("Current Price", f"{q['price']:,.2f} {q['currency']}", f"{q['change_pct']:.2f}%")
-                c2.metric("Timestamp", f"{q['timestamp']}")
-                c3.metric("Data Feed Source", f"{q['source']}")
+                c1.metric("السعر اللحظي", f"{q['price']:,.2f} {q['currency']}", f"{q['change_pct']:.2f}%")
+                c2.metric("توقيت الجلب", f"{q['timestamp']}")
+                c3.metric("المصدر المباشر", f"{q['source']}")
+                
+                with c1.popover("🔍 مرجع الرقم والدليل"):
+                    st.write(f"**كود الشركة:** {sym}")
+                    st.write(f"**السعر الحالي:** {q['price']} {q['currency']}")
+                    st.write(f"**المصدر:** {q['source']}")
+                    st.write(f"**التوقيت:** {q['timestamp']}")
                 
                 st.markdown("---")
                 df_hist = get_stock_history(sym, period="1y")
@@ -218,122 +244,101 @@ elif nav.startswith("2."):
         with tab_70:
             render_index_section(EGX70_EGX50_STOCKS, "EGX 70 & EGX 50")
         with tab_global:
-            render_index_section(GLOBAL_TECH_STOCKS, "Global Tech Giants")
+            render_index_section(GLOBAL_TECH_STOCKS, "Global Tech")
 
-# MODULE 3: UNIVERSAL LIVE FOREX CALCULATOR
+# MODULE 3: FOREX
 elif nav.startswith("3."):
-    title = "💱 Universal Real-Time Forex Calculator" if not is_ar else "💱 حاسبة العملات العالمية اللحظية (Universal Forex)"
-    sub = "Live spot exchange rates for ALL 150+ world currencies" if not is_ar else "ربط مباشر بجميع عملات العالم لحظة بلحظة وبدقة 100%"
+    title = "💱 حاسبة العملات العالمية اللحظية (Universal Forex)" if is_ar else "💱 Universal Real-Time Forex Calculator"
+    sub = "ربط مباشر بجميع عملات العالم مع مرجع تدقيق معتمد لكل سعر" if is_ar else "Live spot exchange rates for ALL 150+ world currencies"
     render_header(title, sub)
     
     live_usd_egp = fetch_live_usd_egp_rate()
-    st.info(f"💡 **Live Market USD/EGP Reference Rate:** `1 USD = {live_usd_egp:.2f} EGP` *(Official Interbank Feed)*")
+    st.info(f"💡 **سعر صرف الدولار المباشر مقابل الجنيه المصري:** `1 USD = {live_usd_egp:.2f} EGP` *(المصدر: Interbank Feed)*")
     
-    st.subheader("🌐 Global Currency Converter")
-    c1, c2, c3 = st.columns(3)
-    amount = c1.number_input("Amount", min_value=0.01, value=1000.0, step=100.0)
+    col_f1, col_f2, col_f3 = st.columns(3)
+    amount = col_f1.number_input("المبلغ / Amount", min_value=0.01, value=1000.0, step=100.0)
     
     world_currencies = [
         "USD", "EUR", "GBP", "EGP", "SAR", "AED", "KWD", "QAR", "BHD", "OMR",
-        "JPY", "CAD", "AUD", "CHF", "CNY", "INR", "TRY", "RUB", "BRL", "ZAR",
-        "SEK", "NOK", "DKK", "NZD", "SGD", "HKD", "KRW", "MXN", "MYR", "THB"
+        "JPY", "CAD", "AUD", "CHF", "CNY", "INR", "TRY", "RUB", "BRL", "ZAR"
     ]
     
-    from_curr = c2.selectbox("From Currency", world_currencies, index=0)
-    to_curr = c3.selectbox("To Currency", world_currencies, index=3)
+    from_curr = col_f2.selectbox("من عملة / From", world_currencies, index=0)
+    to_curr = col_f3.selectbox("إلى عملة / To", world_currencies, index=3)
     
     res = calculate_universal_forex_conversion(amount, from_curr, to_curr)
     
     st.success(f"### 💸 {amount:,.2f} {from_curr} = {res['converted_amount']:,.2f} {to_curr}")
-    st.info(f"**Exact Real-Time Exchange Rate:** 1 {from_curr} = {res['exchange_rate']} {to_curr}  *(Updated at {res['timestamp']})*")
     
-    st.markdown("---")
-    st.subheader("🇪🇬 EGP Benchmark Comparison")
-    col_egp1, col_egp2 = st.columns(2)
-    col_egp1.metric(f"{amount:,.2f} {from_curr} in EGP", f"{res['from_amount_in_egp']:,.2f} EGP")
-    col_egp2.metric(f"{res['converted_amount']:,.2f} {to_curr} in EGP", f"{res['to_amount_in_egp']:,.2f} EGP")
+    col_r1, col_r2 = st.columns(2)
+    col_r1.metric(f"{amount:,.2f} {from_curr} بالجنيه المصري", f"{res['from_amount_in_egp']:,.2f} EGP")
+    col_r2.metric(f"{res['converted_amount']:,.2f} {to_curr} بالجنيه المصري", f"{res['to_amount_in_egp']:,.2f} EGP")
+    
+    with col_r1.popover("🔍 مرجع سعر الصرف والمصدر الرسمي"):
+        st.write(f"**سعر التحويل الدقيق:** 1 {from_curr} = {res['exchange_rate']} {to_curr}")
+        st.write(f"**مصدر بيانات العملات:** {res['source']}")
+        st.write(f"**توقيت الجلب:** {res['timestamp']}")
 
 # MODULE 4: CRYPTO
 elif nav.startswith("4."):
-    title = "🪙 Live Crypto Trading Feed & Binance Market Terminal" if not is_ar else "🪙 أسواق العملات الرقمية والريال تاييم - بث مباشر من باينانس"
-    sub = "Real-time spot prices, 24h volume, candlestick charts, and technical indicators (RSI & SMAs)" if not is_ar else "أسعار سبوت فورية، حجم تداول 24 ساعة، رسوم شمعية ومؤشرات فنية حية مباشرة من Binance"
+    title = "🪙 أسواق الكريبتو والبث المباشر من باينانس" if is_ar else "🪙 Live Crypto Trading Feed"
+    sub = "أسعار فورية، رسم شمعي، ومؤشرات فنية حية مباشرة من منصة Binance" if is_ar else "Real-time spot prices and technical indicators from Binance"
     render_header(title, sub)
-    
-    st.markdown("### 🔥 All Active Binance USDT Spot Markets" if not is_ar else "🔥 جميع أسواق سبوت USDT النشطة على منصة باينانس")
     
     tickers = get_binance_ticker_24hr()
     if tickers:
         df_crypto = pd.DataFrame(tickers)
-        df_crypto = df_crypto[['symbol', 'price', 'change_24h_pct', 'high_24h', 'low_24h', 'volume_24h', 'quote_volume_24h']]
-        df_crypto.columns = ['Trading Pair', 'Last Price ($)', '24h Change (%)', '24h High ($)', '24h Low ($)', '24h Volume', '24h Turnover (USDT)']
-        
-        crypto_search = st.text_input("🔍 Filter Crypto Pair / تصفية عملة رقمية", value="", placeholder="e.g. BTC, ETH, SOL, XRP").strip().upper()
-        if crypto_search:
-            df_crypto = df_crypto[df_crypto['Trading Pair'].str.contains(crypto_search)]
-            
-        st.dataframe(df_crypto.sort_values(by='24h Turnover (USDT)', ascending=False), use_container_width=True, height=350)
-    else:
-        st.warning("Unable to fetch live Binance spot data at this moment. Please check network connection.")
+        df_crypto = df_crypto[['symbol', 'price', 'change_24h_pct', 'high_24h', 'low_24h', 'volume_24h', 'source', 'timestamp']]
+        df_crypto.columns = ['الرمز', 'السعر اللحظي ($)', 'التغير 24h (%)', 'أعلى سعر ($)', 'أدنى سعر ($)', 'حجم التداول', 'المصدر', 'التوقيت']
+        st.dataframe(df_crypto.sort_values(by='السعر اللحظي ($)', ascending=False), use_container_width=True, height=350)
 
-    st.markdown("---")
-    st.subheader("📊 Advanced Candlestick Chart & Technical Indicators (Binance Feed)" if not is_ar else "📊 الرسم الشمعي المتقدم والمؤشرات الفنية (بث مباشر من باينانس)")
-    
-    col_c1, col_c2 = st.columns([1, 2])
-    crypto_symbols_list = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "ADAUSDT", "DOGEUSDT", "AVAXUSDT", "LINKUSDT", "DOTUSDT"]
-    selected_crypto_sym = col_c1.selectbox("Select Trading Pair / اختر زوج التداول", crypto_symbols_list, index=0)
-    selected_interval = col_c2.selectbox("Select Timeframe / اختر الإطار الزمني", ["1h", "4h", "1d", "1w"], index=2)
-    
-    interval_map = {"1h": "1h", "4h": "4h", "1d": "1d", "1w": "1w"}
-    df_klines = get_binance_klines(selected_crypto_sym, interval=interval_map.get(selected_interval, "1d"))
-    if not df_klines.empty:
-        df_klines = calculate_technical_indicators(df_klines)
-        single_ticker = get_binance_ticker_24hr(selected_crypto_sym)
-        if single_ticker:
-            st.markdown(f"### **{selected_crypto_sym}** — Live Price: **${single_ticker[0]['price']:,.4f}** ({single_ticker[0]['change_24h_pct']:+.2f}%)")
-        fig_crypto = create_candlestick_chart(df_klines, f"Binance Live Spot - {selected_crypto_sym} ({selected_interval})")
-        st.plotly_chart(fig_crypto, use_container_width=True)
-    else:
-        st.warning(f"Historical klines unavailable for {selected_crypto_sym}.")
-
-# MODULE 5: GOLD & SAGHA PREMIUM CALCULATOR
+# MODULE 5: GOLD
 elif nav.startswith("5."):
-    title = "🏆 Real-Time Gold Pricing & Sagha Premium Calculator" if not is_ar else "🏆 الذهب العالمي وحاسبة أسعار سوق الصاغة المصرية"
-    sub = "Global Gold Spot linked to USD/EGP with custom Sagha local market premium adjustment" if not is_ar else "الربط بين الأونصة عالمياً والأن المباشر لـ USD/EGP مع حاسبة فرق الصاغة المحلي"
+    title = "🏆 الذهب العالمي وحاسبة سوق الصاغة المصرية" if is_ar else "🏆 Real-Time Gold Pricing & Sagha Premium Calculator"
+    sub = "الربط بين سعر الأونصة عالمياً والأن المباشر مع دعم مرجع كل رقم" if is_ar else "Global Gold Spot linked to USD/EGP with custom Sagha premium"
     render_header(title, sub)
     
-    st.sidebar.markdown("### 🏛️ Egyptian Sagha Adjustment")
-    sagha_premium = st.sidebar.slider("Sagha Local Premium %", min_value=0.0, max_value=25.0, value=0.0, step=0.5, help="Adjusts local Egyptian market premium over spot.")
+    st.sidebar.markdown("### 🏛️ فرق الصاغة المحلية")
+    sagha_premium = st.sidebar.slider("نسبة فرق الصاغة %", min_value=0.0, max_value=25.0, value=0.0, step=0.5)
     
     gold = get_gold_reference_data(sagha_premium_pct=sagha_premium)
     
     col_g1, col_g2 = st.columns(2)
-    col_g1.metric("Global Gold Spot (USD/oz)", f"${gold['usd_per_troy_oz']:,.2f}")
-    col_g2.metric("24K Gold Gram (EGP)", f"{gold['indicative_egp_per_gram_24k']:,.2f} EGP", f"+{sagha_premium}% Sagha Premium" if sagha_premium > 0 else "Official Live Spot")
+    col_g1.metric("سعر أونصة الذهب عالمياً", f"${gold['usd_per_troy_oz']:,.2f}")
+    col_g2.metric("سعر جرام الذهب عيار 24 (EGP)", f"{gold['indicative_egp_per_gram_24k']:,.2f} EGP")
     
-    st.subheader("EGP Karat Reference Prices")
+    with col_g1.popover("🔍 مرجع أرقام الذهب والإسناد"):
+        st.write(f"**مصدر الذهب العالمي:** {gold['gold_source']}")
+        st.write(f"**سعر صرف الدولار المعتمد:** {gold['usd_egp_rate']} EGP")
+        st.write(f"**نسبة فرق الصاغة المطبقة:** {gold['sagha_premium_applied']}%")
+        st.write(f"**توقيت الجلب:** {gold['timestamp']}")
+        
+    st.subheader("أسعار الأعيرة المختلفة بالجنيه المصري")
     st.table(pd.DataFrame([gold['karats_indicative_egp']]))
 
 # MODULE 6: ARBITRAGE SCANNER
 elif nav.startswith("6."):
-    title = "🚀 Real-Time Arbitrage Scanner" if not is_ar else "🚀 مكتشف الفرص التبادلية - تحديث تلقائي (Live Scanner)"
-    sub = "Automated triangular arbitrage scanner with net fee calculation" if not is_ar else "فحص دقيق ومباشر للفروق السعرية بين أزواج التداول مع خصم العمولات"
+    title = "🚀 مكتشف الفرص التبادلية (Arbitrage Scanner)" if is_ar else "🚀 Real-Time Arbitrage Scanner"
+    sub = "فحص الفروق السعرية بين أزواج التداول مع حساب الصافي بعد العمولات" if is_ar else "Automated triangular arbitrage scanner with net fee calculation"
     render_header(title, sub)
     render_live_arbitrage_scanner()
 
-# MODULE 7: FINANCIAL STATEMENTS, RATIOS & FORECAST ENGINE
+# MODULE 7: FINANCIAL STATEMENTS & PDF/EXCEL PARSER
 elif nav.startswith("7."):
-    render_header("📈 Financial Statements & Precision Ratio Intelligence", "Auto-fetch stock statements or upload custom files for instant multi-year ratio & forecast analysis")
+    title = "📈 القوائم المالية والتحليل الذكي (PDF / Excel / Stock Extractor)" if is_ar else "📈 Financial Statements & Precision Ratio Intelligence"
+    sub = "استخراج البيانات المالية تلقائياً من أسهم البورصة أو رفع ملفات PDF و Excel لربط وتحليل النسب والربحية" if is_ar else "Auto-fetch stock statements or upload custom PDF/Excel files for ratio analysis"
+    render_header(title, sub)
     
-    tab1, tab2 = st.tabs(["🔍 Auto-Fetch Stock Statements", "📂 Upload Custom Financial Report"])
+    tab1, tab2 = st.tabs(["🔍 استخراج القوائم لشركة بالبورصة", "📂 رفع ملف قوائم مالية (PDF / Excel / CSV)"])
     df_financials = None
     
     with tab1:
-        st.markdown("### 🏛️ Automated Financial Statement Extractor")
-        st.info("Enter any stock symbol from Egyptian Exchange (EGX) or Global Stock Markets (e.g. `COMI.CA`, `FWRY.CA`, `AAPL`, `NVDA`, `MSFT`, `AMZN`) to fetch multi-year statements instantly.")
+        st.markdown("### 🏛️ استخراج بيانات القوائم المالية تلقائياً")
+        st.info("أدخل كود أي شركة بالبورصة المصرية أو العالمية (مثال: `COMI.CA`, `FWRY.CA`, `AAPL`, `NVDA`) لاستخراج القوائم المالية فوراً.")
         
-        stock_input = st.text_input("Enter Stock Ticker", value="COMI.CA").upper()
-        if st.button("🚀 Fetch Financial Statements", key="fetch_btn"):
-            with st.spinner("Extracting income statement & balance sheet..."):
+        stock_input = st.text_input("كود الشركة / Stock Ticker", value="COMI.CA").upper()
+        if st.button("🚀 جلب القوائم المالية", key="fetch_btn"):
+            with st.spinner("جاري استخراج قائمة الدخل والميزانية العمومية..."):
                 fetched_df, msg = fetch_stock_financials_yfinance(stock_input)
                 if fetched_df is not None:
                     st.session_state['fetched_df'] = fetched_df
@@ -345,42 +350,44 @@ elif nav.startswith("7."):
             df_financials = st.session_state['fetched_df']
 
     with tab2:
-        st.markdown("### 📂 Upload Custom Financial Report")
-        st.info("Upload any Excel (.xlsx, .xls) or CSV file containing your company's income statement and balance sheet items. The parser will standardize metrics and perform zero-error ratio analysis.")
-        uploaded_file = st.file_uploader("Upload Excel / CSV File", type=['xlsx', 'xls', 'csv'], key="fin_file_uploader")
+        st.markdown("### 📂 رفع ملف القوائم المالية (يدعم PDF و Excel و CSV)")
+        st.info("يمكنك الآن رفع تقارير PDF الخاصة بشركتك أو ملفات Excel/CSV. سيقوم المحلل المالي الذكي باستخراج الإيرادات وصافي الأرباح والأصول والخصوم وتحليلها فوراً.")
+        
+        uploaded_file = st.file_uploader("اختر ملف PDF أو Excel أو CSV", type=['pdf', 'xlsx', 'xls', 'csv'], key="fin_file_uploader")
         if uploaded_file is not None:
-            parsed_df = parse_uploaded_financial_file(uploaded_file.read(), uploaded_file.name)
-            if parsed_df is not None:
-                st.session_state['fetched_df'] = parsed_df
-                df_financials = parsed_df
-                st.success("✅ File uploaded, parsed, and standardized successfully!")
-            else:
-                st.error("Error reading or parsing file. Please check file format.")
+            with st.spinner("جاري قراءة واستخراج البيانات من الملف..."):
+                parsed_df = parse_uploaded_financial_file(uploaded_file.read(), uploaded_file.name)
+                if parsed_df is not None:
+                    st.session_state['fetched_df'] = parsed_df
+                    df_financials = parsed_df
+                    st.success(f"✅ تم قراءة واستخراج القوائم المالية بنجاح من الملف `{uploaded_file.name}`!")
+                else:
+                    st.error("تعذر قراءة أو استخراج البيانات من الملف. يرجى التأكد من المرفق.")
 
     if df_financials is None:
         st.markdown("---")
-        st.info("💡 Active Sample 3-Year Financial Report (Fetch a stock or upload a file above):")
+        st.info("💡 نموذج افتراضي للقوائم المالية (3 سنوات) للعرض والتحليل:")
         df_financials = create_sample_3yr_financial_data()
 
-    st.subheader("📋 Standardized Financial Statement View")
+    st.subheader("📋 القوائم المالية المستخرجة")
     st.dataframe(df_financials, use_container_width=True)
     
     st.markdown("---")
-    if st.button("📊 Calculate Ratios & Run Forecast Model", key="analyze_btn", use_container_width=True):
+    if st.button("📊 حساب النسب المالية والتوقعات المستقبلية", key="analyze_btn", use_container_width=True):
         analysis = analyze_financial_ratios(df_financials)
         if analysis and "ratios_by_year" in analysis:
-            st.subheader("📋 Calculated Multi-Year Financial Ratios & Performance")
+            st.subheader("📋 نتائج تحليل النسب المالية والربحية")
             ratios_df = pd.DataFrame(analysis["ratios_by_year"])
             st.dataframe(ratios_df, use_container_width=True)
             
             st.markdown("---")
-            st.subheader("🔮 Next Year (N+1) Forecast & Compound Projection")
+            st.subheader("🔮 التوقعات المالية للسنة القادمة (N+1)")
             fc = analysis["forecast_next_year"]
             c1, c2, c3, c4 = st.columns(4)
-            c1.metric("Projected Revenue", f"${fc['Projected Revenue']:,.2f}", f"{fc['Revenue CAGR / Growth Rate (%)']:+.2f}% CAGR")
-            c2.metric("Projected Net Income", f"${fc['Projected Net Income']:,.2f}", f"{fc['Net Income CAGR / Growth Rate (%)']:+.2f}% CAGR")
-            c3.metric("Est. Net Profit Margin", f"{fc['Estimated Net Profit Margin (%)']:.2f}%")
-            c4.metric("Est. Return on Equity (ROE)", f"{fc['Estimated ROE (%)']:.2f}%")
+            c1.metric("الإيرادات المتوقعة", f"${fc['Projected Revenue']:,.2f}", f"{fc['Revenue CAGR / Growth Rate (%)']:+.2f}% CAGR")
+            c2.metric("صافي الربح المتوقع", f"${fc['Projected Net Income']:,.2f}", f"{fc['Net Income CAGR / Growth Rate (%)']:+.2f}% CAGR")
+            c3.metric("هامش صافي الربح", f"{fc['Estimated Net Profit Margin (%)']:.2f}%")
+            c4.metric("العائد على الملكية (ROE)", f"{fc['Estimated ROE (%)']:.2f}%")
             
             fig_fc = create_forecast_chart(
                 analysis["years"],
@@ -391,4 +398,4 @@ elif nav.startswith("7."):
             )
             st.plotly_chart(fig_fc, use_container_width=True)
         else:
-            st.error("Unable to calculate ratios due to insufficient historical financial data.")
+            st.error("تعذر حساب النسب المالية لعدم كفاية البيانات.")
