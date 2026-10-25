@@ -20,51 +20,80 @@ from ui.charts import create_candlestick_chart, create_forecast_chart
 st.set_page_config(page_title="Arbitrage Hub - Pro Intelligence Terminal", layout="wide")
 
 st.markdown("""
+
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     
     html, body, .stApp { 
-        background-color: #0B0E11; 
-        color: #FFFFFF; 
-            headline_html = f'<div style="margin-bottom: 4px;"><a href="{item[\'url\"]}" target="_blank" style="color: #F0B90B; font-size: 17px; font-weight: 700; text-decoration: none; font-family: sans-serif;">{item[\'title\"]} {link_icon}</a></div>'
+        background-color: #07090C !important; 
+        color: #F8FAFC !important; 
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important; 
     }
+    
+    /* Luxury Sidebar Styling */
     .stSidebar { 
-        background-color: #181A20 !important; 
-        border-right: 1px solid #2B313A; 
+        background-color: #0F1319 !important; 
+        border-right: 2px solid #D4AF37 !important; 
     }
-    h1, h2, h3 { 
-        color: #F0B90B !important; 
-        font-weight: 700; 
-        letter-spacing: -0.3px; 
-    }
-    .stApp p, .stApp span, .stApp label {
-        color: #FFFFFF !important; 
-        font-size: 15px; 
-        font-weight: 500; 
-    }
-    div[data-testid="stMetricValue"] { 
-        color: #F0B90B !important; 
-        font-size: 30px !important; 
-        font-weight: 800 !important; 
-    }
-    div[data-testid="stMetricLabel"] { 
-        color: #FFFFFF !important; 
-        font-size: 14px !important; 
-        font-weight: 600 !important; 
-    }
-    div[data-testid="stPopoverBody"], div[data-testid="stPopoverBody"] *, div[role="dialog"], div[role="dialog"] * {
-        color: #000000 !important;
-        background-color: #FFFFFF !important;
-    }
-    input, select, div[data-baseweb="select"] {
-        background-color: #2B313A !important;
-        color: #FFFFFF !important;
-        border-radius: 6px !important;
-        border: 1px solid #474D57 !important;
+    
+    .stSidebar .stRadio label {
+        color: #E2E8F0 !important;
+        font-weight: 600 !important;
         font-size: 15px !important;
     }
-    .stDataFrame { border: 1px solid #363C4E; border-radius: 6px; }
+    
+    /* High Contrast Headers */
+    h1, h2, h3 { 
+        color: #D4AF37 !important; 
+        font-weight: 800 !important; 
+        letter-spacing: -0.5px; 
+    }
+    
+    /* High Contrast Text & Labels */
+    .stApp p, .stApp span, .stApp label, .stApp div {
+        color: #F8FAFC !important; 
+    }
+    
+    div[data-testid="stMetricValue"] { 
+        color: #F3BA2F !important; 
+        font-size: 32px !important; 
+        font-weight: 900 !important; 
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    div[data-testid="stMetricLabel"] { 
+        color: #CBD5E1 !important; 
+        font-size: 14px !important; 
+        font-weight: 700 !important; 
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    input, select, div[data-baseweb="select"] {
+        background-color: #121821 !important;
+        color: #FFFFFF !important;
+        border-radius: 8px !important;
+        border: 2px solid #D4AF37 !important;
+        font-size: 15px !important;
+        font-weight: 600 !important;
+    }
+    
+    .stButton>button {
+        background: linear-gradient(135deg, #D4AF37 0%, #AA771C 100%) !important;
+        color: #07090C !important;
+        font-weight: 800 !important;
+        border-radius: 8px !important;
+        border: none !important;
+        box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
+    }
+    
+    .stDataFrame { 
+        border: 2px solid #D4AF37 !important; 
+        border-radius: 8px !important; 
+        background-color: #0F1319 !important;
+    }
 </style>
+
 """, unsafe_allow_html=True)
 
 init_db()
