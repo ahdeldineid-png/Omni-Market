@@ -1,8 +1,10 @@
 import streamlit as st
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 def render_header(title: str, subtitle: str = ""):
-    now_time = datetime.now().strftime("%I:%M:%S %p")
+    # Egypt Cairo Local Time (UTC+3)
+    cairo_now = datetime.now(timezone.utc) + timedelta(hours=3)
+    now_time = cairo_now.strftime("%I:%M:%S %p") + " (توقيت القاهرة)"
     st.markdown(f'''
         <div style="background: #1E2329; padding: 22px; border-radius: 8px; border: 1px solid #2B313A; border-left: 6px solid #F0B90B; margin-bottom: 24px;">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">

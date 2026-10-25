@@ -1,6 +1,6 @@
 import requests
 import yfinance as yf
-from datetime import datetime, timezone, timedelta, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Dict, Any
 
 HEADERS = {
@@ -11,49 +11,46 @@ def fetch_live_rates_all_currencies(base_currency: str = "USD") -> Dict[str, flo
     base = base_currency.upper()
     rates = {base: 1.0}
     
-    try:
-        resp = requests.get(f"https://open.er-api.com/v6/latest/{base}", headers=HEADERS, timeout=4)
-        if resp.status_code == 200:
-            fetched = resp.json().get('rates', {})
-            if fetched:
-                for c, r in fetched.items():
-                    rates[c] = float(r)
-                return rates
-    except Exception:
-        pass
-
-    try:
-        resp = requests.get(f"https://api.exchangerate-api.com/v4/latest/{base}", headers=HEADERS, timeout=4)
-        if resp.status_code == 200:
-            fetched = resp.json().get('rates', {})
-            if fetched:
-                for c, r in fetched.items():
-                    rates[c] = float(r)
-                return rates
-    except Exception:
-        pass
+    endpoints = [
+        f"https://open.er-api.com/v6/latest/{base}",
+        f"https://api.exchangerate-api.com/v4/latest/{base}"
+    ]
+    
+    for url in endpoints:
+        try:
+            resp = requests.get(url, headers=HEADERS, timeout=3)
+            if resp.status_code == 200:
+                fetched = resp.json().get('rates', {})
+                if fetched:
+                    for c, r in fetched.items():
+                        rates[c] = float(r)
+                    return rates
+        except Exception:
+            continue
 
     return rates
 
 def fetch_live_usd_egp_rate() -> float:
-    rates = fetch_live_rates_all_currencies("USD")
-    if "EGP" in rates and rates["EGP"] > 0:
-        return round(rates["EGP"], 2)
-
+    # First try yfinance live interbank feed USDEGP=X
     try:
         ticker = yf.Ticker("USDEGP=X")
-        price = ticker.fast_info.get('last_price')
-        if price and price > 0:
+        price = ticker.fast_info.get('last_price') or ticker.fast_info.get('previous_close')
+        if price and float(price) > 0:
             return round(float(price), 2)
     except Exception:
         pass
+
+    # Second try ExchangeRate APIs
+    rates = fetch_live_rates_all_currencies("USD")
+    if "EGP" in rates and rates["EGP"] > 0:
+        return round(rates["EGP"], 2)
 
     return 50.0
 
 def calculate_universal_forex_conversion(amount: float, from_curr: str, to_curr: str) -> Dict[str, Any]:
     from_c = from_curr.upper()
     to_c = to_curr.upper()
-    now_str = (datetime.now(timezone.utc) + timedelta(hours=3)).strftime("%Y-%m-%d %I:%M:%S %p Cairo")
+    cairo_now_str = (datetime.now(timezone.utc) + timedelta(hours=3)).strftime("%Y-%m-%d %I:%M:%S %p (القاهرة)")
     
     rates_from_base = fetch_live_rates_all_currencies(from_c)
     
@@ -68,7 +65,7 @@ def calculate_universal_forex_conversion(amount: float, from_curr: str, to_curr:
     converted_amount = amount * exchange_rate
 
     usd_rates = fetch_live_rates_all_currencies("USD")
-    egp_rate_usd = usd_rates.get("EGP", 50.0)
+    egp_rate_usd = fetch_live_usd_egp_rate()
 
     from_rate_to_usd = usd_rates.get(from_c, 1.0)
     to_rate_to_usd = usd_rates.get(to_c, 1.0)
@@ -89,5 +86,5 @@ def calculate_universal_forex_conversion(amount: float, from_curr: str, to_curr:
         'to_amount_in_egp': round(to_in_egp, 2),
         'live_usd_egp': round(egp_rate_usd, 2),
         'source': 'Binance Multi-Feed Forex Engine',
-        'timestamp': now_str
+        'timestamp': cairo_now_str
     }

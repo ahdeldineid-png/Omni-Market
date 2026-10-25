@@ -1,6 +1,6 @@
 import yfinance as yf
 import pandas as pd
-from datetime import datetime, timezone, timedelta, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, List
 
 # EGX 30 Index (The 30 most active and liquid companies in the Egyptian Exchange)
@@ -29,7 +29,6 @@ EGX30_STOCKS = [
     {"symbol": "EMFD.CA", "name_en": "Emaar Misr for Development", "name_ar": "إعمار مصر للتنمية", "index": "EGX30", "sector": "Real Estate & Construction"},
     {"symbol": "OCDI.CA", "name_en": "Six of October Development & Investment (SODIC)", "name_ar": "سوديك - السادس من أكتوبر للتنمية والاستثمار", "index": "EGX30", "sector": "Real Estate & Construction"},
     {"symbol": "QNBA.CA", "name_en": "Qatar National Bank Alahli (QNB)", "name_ar": "بنك قطر الوطني الأهلي", "index": "EGX30", "sector": "Banking & Financials"},
-    {"symbol": "ABUK.CA", "name_en": "Abu Qir Fertilizers", "name_ar": "أبو قير للأسمدة", "index": "EGX30", "sector": "Petrochemicals"},
     {"symbol": "EFIG.CA", "name_en": "e-finance for Digital & Financial Investments", "name_ar": "إي فاينانس للاستثمارات المالية والرقمية", "index": "EGX30", "sector": "Technology & Financials"},
     {"symbol": "ORHD.CA", "name_en": "Orascom Development Egypt", "name_ar": "أوراسكوم للتنمية مصر", "index": "EGX30", "sector": "Real Estate"},
     {"symbol": "CCAP.CA", "name_en": "Qalaa Holdings", "name_ar": "القلعة للاستثمارات المالية", "index": "EGX30", "sector": "Investment"},
@@ -54,9 +53,8 @@ EGX70_EGX50_STOCKS = [
     {"symbol": "RMDA.CA", "name_en": "Tenth of Ramadan Pharmaceutical (Rameda)", "name_ar": "رميدا - العاشر من رمضان للأدوية", "index": "EGX70", "sector": "Healthcare & Pharmaceuticals"},
     {"symbol": "ALCN.CA", "name_en": "Canal Shipping Agencies", "name_ar": "القناة للتوكيلات الملاحية", "index": "EGX70", "sector": "Shipping & Logistics"},
     {"symbol": "SPPH.CA", "name_en": "Speed Medical", "name_ar": "سبيد ميديكال", "index": "EGX70", "sector": "Healthcare"},
-    {"symbol": "ARAB.CA", "name_en": "Aраб Aсетс Дерيلوبمنت", "name_ar": "أصول للتنمية والاستثمار الزراعي", "index": "EGX70", "sector": "Agriculture"},
+    {"symbol": "ARAB.CA", "name_en": "Arab Assets Development", "name_ar": "أصول للتنمية والاستثمار الزراعي", "index": "EGX70", "sector": "Agriculture"},
     {"symbol": "OIH.CA", "name_en": "Orascom Investment Holding", "name_ar": "أوراسكوم للاستثمار القابضة", "index": "EGX70", "sector": "Investment"},
-    {"symbol": "UNIT.CA", "name_en": "Unimin Egypt / Universal", "name_ar": "يونيباك / الإجمالية", "index": "EGX70", "sector": "Industrial"},
     {"symbol": "PRDC.CA", "name_en": "Pioneers Properties for Development", "name_ar": "بايونيرز بروبرتيز للتنمية العمرانية", "index": "EGX70", "sector": "Real Estate"},
     {"symbol": "MOIN.CA", "name_en": "Marsa Marsa Alam For Tourism Development", "name_ar": "مرسى علم للتنمية السياحية", "index": "EGX70", "sector": "Tourism"}
 ]
@@ -103,7 +101,7 @@ def get_stock_quote(symbol: str) -> Dict[str, Any]:
             else:
                 return {'error': f'Live price feed unavailable for ticker {symbol}', 'symbol': symbol}
 
-        now_str = (datetime.now(timezone.utc) + timedelta(hours=3)).strftime("%I:%M:%S %p Cairo")
+        cairo_now_str = (datetime.now(timezone.utc) + timedelta(hours=3)).strftime("%I:%M:%S %p (القاهرة)")
         prev_close = ticker.fast_info.get('previous_close') or price
         change_pct = ((price - prev_close) / prev_close) * 100.0 if prev_close else 0.0
 
@@ -113,8 +111,8 @@ def get_stock_quote(symbol: str) -> Dict[str, Any]:
             'price': float(price),
             'currency': 'EGP' if symbol.endswith('.CA') else 'USD',
             'change_pct': round(float(change_pct), 2),
-            'source': 'Binance Stock Engine (Yahoo Finance Feed)',
-            'timestamp': now_str
+            'source': 'EGX / Yahoo Finance Live Feed',
+            'timestamp': cairo_now_str
         }
     except Exception as e:
         return {'error': str(e), 'symbol': symbol}
