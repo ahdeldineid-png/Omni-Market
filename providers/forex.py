@@ -1,7 +1,9 @@
 import requests
-import pandas as pd
 
-ALL_WORLD_CURRENCIES = ["USD", "EGP", "EUR", "GBP", "SAR", "AED", "KWD", "QAR", "CAD", "AUD", "JPY", "CHF", "CNY"]
+ALL_WORLD_CURRENCIES = [
+    "USD", "EGP", "EUR", "GBP", "SAR", "AED", "KWD", "QAR", "CAD", "AUD", 
+    "JPY", "CHF", "CNY", "BHD", "OMR", "JOD", "KWD", "INR", "ZAR", "BRL", "SGD"
+]
 
 def fetch_live_usd_egp_rate() -> float:
     try:
@@ -18,10 +20,17 @@ def fetch_live_rates_all_currencies() -> dict:
         res = requests.get("https://open.er-api.com/v6/latest/USD", timeout=5)
         data = res.json()
         if 'rates' in data:
-            return data['rates']
+            rates = data['rates']
+            if 'EGP' not in rates:
+                rates['EGP'] = 48.50
+            return rates
     except Exception:
         pass
-    return {"USD": 1.0, "EGP": 48.50, "EUR": 0.92, "GBP": 0.78, "SAR": 3.75, "AED": 3.67}
+    return {
+        "USD": 1.0, "EGP": 48.50, "EUR": 0.92, "GBP": 0.78, "SAR": 3.75, 
+        "AED": 3.67, "KWD": 0.31, "QAR": 3.64, "CAD": 1.35, "AUD": 1.52, 
+        "JPY": 152.0, "CHF": 0.86, "CNY": 7.12, "BHD": 0.38, "OMR": 0.38, "JOD": 0.71
+    }
 
 def calculate_universal_forex_conversion(amount: float, from_curr: str, to_curr: str) -> dict:
     rates = fetch_live_rates_all_currencies()

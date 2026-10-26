@@ -1,8 +1,7 @@
 from providers.forex import fetch_live_usd_egp_rate
 
 def get_gold_reference_data(sagha_premium_pct: float = 0.0) -> dict:
-    # Updated accurate gold spot price for late 2026 (~$2,745.00 per troy oz)
-    usd_per_oz = 2745.00
+    usd_per_oz = 2750.00
     usd_egp = fetch_live_usd_egp_rate()
     
     gram_24k_usd = usd_per_oz / 31.1035

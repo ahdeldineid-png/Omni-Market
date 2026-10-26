@@ -711,26 +711,3 @@ elif nav.startswith("11."):
         """)
 
 
-elif nav.startswith("10."):
-    title = "التقارير اليومية وسجل الإشعارات اللحظية (Daily Reports & Notifications)" if is_ar else "Daily Reports & Real-Time Price Notification Log"
-    sub = "عرض شامل لكل التغيرات والإشعارات التي حدثت في أسعار العملات والأسهم والذهب" if is_ar else "Full historic log of all automated price alerts"
-    render_header(title, sub, is_ar=is_ar)
-    
-    logs = get_all_notifications_log(limit=500)
-    if logs:
-        df_logs = pd.DataFrame(logs)
-        display_df = pd.DataFrame()
-        display_df['التاريخ والتوقيت بالثانية'] = df_logs['formatted_time']
-        display_df['فئة الأصل'] = df_logs['asset_type']
-        display_df['اسم الأصل'] = df_logs['display_name_ar'] if is_ar else df_logs['display_name_en']
-        display_df['السعر السابق'] = df_logs.apply(lambda r: f"{r['old_price']:,.2f} {r['currency']}", axis=1)
-        display_df['السعر الجديد'] = df_logs.apply(lambda r: f"{r['new_price']:,.2f} {r['currency']}", axis=1)
-        display_df['نسبة التغير %'] = df_logs.apply(lambda r: f"{r['change_pct']:+.3f}%", axis=1)
-        st.dataframe(display_df, use_container_width=True, height=400)
-        
-        if st.button("مسح سجل الإشعارات" if is_ar else "Clear Notification Log"):
-            clear_notifications_log()
-            st.success("تم مسح السجل بنجاح!")
-            st.rerun()
-    else:
-        st.info("لا توجد إشعارات مسجلة حتى الآن." if is_ar else "No notifications logged yet.")
